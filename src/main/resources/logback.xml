@@ -10,5 +10,3 @@
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
-
-        <!--나중에 로그 관리 파일을 따로 만들어야되-->
