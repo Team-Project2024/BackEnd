@@ -1,7 +1,9 @@
 package Hoseo.GraduationProject.Exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,5 +30,17 @@ public class GlobalExceptionHandler {
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        if(e.getCause() instanceof InvalidFormatException){
+            InvalidFormatException t = (InvalidFormatException) e.getCause();
+            ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(),
+                    t.getPath().get(0).getFieldName()+" : 잘못된 형식의 값입니다");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(response);
+        }
+        return null;
     }
 }
