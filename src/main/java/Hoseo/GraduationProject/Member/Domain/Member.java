@@ -52,4 +52,9 @@ public class Member {
         this.role = role;
         this.major = major;
     }
+
+    @Override
+    public String toString(){
+        return "Member{id:"+id+"}";
+    }
 }

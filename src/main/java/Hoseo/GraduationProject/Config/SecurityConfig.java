@@ -1,16 +1,30 @@
 package Hoseo.GraduationProject.Config;
 
+import Hoseo.GraduationProject.Security.JWT.JWTFilter;
+import Hoseo.GraduationProject.Security.JWT.JWTUtil;
+import Hoseo.GraduationProject.Security.JWT.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil){
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
+    }
 
     // 비밀번호 암호화를 위한 BCrypt
     // Bcrypt는 단방향 해시 알고리즘이다. 따라서 복호화가 불가능
@@ -18,6 +32,12 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
         return new BCryptPasswordEncoder();
+    }
+
+    // AuthenticationManager를 Baen으로 등록
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
@@ -36,10 +56,16 @@ public class SecurityConfig {
 
         //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/student").hasRole("STUDENT")
-                        .requestMatchers("/api/professor").hasRole("PROFESSOR")
-                        .requestMatchers("/api/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
+                        .requestMatchers("/api/professor/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
+                        .requestMatchers("/api/admin/**", "/api/student/**", "/api/professor/**").hasRole("ADMIN") // ADMIN은 모든 패턴에 접근 가능
                         .anyRequest().permitAll()) //나머지는 모두에게 권한 있음
+
+                // 로그인 이전에 세션 생성
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+                // 필터 추가
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil)
+                        , UsernamePasswordAuthenticationFilter.class)
 
         //세션 설정
                 .sessionManagement((session) -> session
