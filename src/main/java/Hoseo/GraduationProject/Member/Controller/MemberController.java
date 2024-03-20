@@ -1,10 +1,7 @@
 package Hoseo.GraduationProject.Member.Controller;
 
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
-import Hoseo.GraduationProject.Member.DTO.FindUserIdDTO;
-import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
-import Hoseo.GraduationProject.Member.DTO.JoinDTO;
-import Hoseo.GraduationProject.Member.DTO.VerificationCodeDTO;
+import Hoseo.GraduationProject.Member.DTO.*;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Service.MailSenderService;
 import Hoseo.GraduationProject.Member.Service.MemberService;
@@ -12,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -58,7 +52,15 @@ public class MemberController {
     public ResponseEntity<Void> CodeVerification(
             @Valid @RequestBody VerificationCodeDTO verificationCodeDTO
     ){
-        memberService.CodeVerification(verificationCodeDTO);
+        memberService.codeVerification(verificationCodeDTO);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @Valid @RequestBody ChangePwDTO changePwDTO
+    ){
+        memberService.changePassword(changePwDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class FindUserIdDTO {
     @Email
+    @NotBlank
     private String email;
 
     @NotBlank

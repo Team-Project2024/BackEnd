@@ -10,6 +10,7 @@ import lombok.Setter;
 public class FindUserPWDTO {
 
     @Email
+    @NotBlank
     private String email;
 
     @NotBlank

@@ -25,6 +25,7 @@ public class JoinDTO {
     private String name;
 
     @Email
+    @NotBlank
     private String email;
 
     @NotNull

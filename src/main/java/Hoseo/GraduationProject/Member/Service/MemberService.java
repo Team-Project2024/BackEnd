@@ -1,10 +1,7 @@
 package Hoseo.GraduationProject.Member.Service;
 
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
-import Hoseo.GraduationProject.Member.DTO.FindUserIdDTO;
-import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
-import Hoseo.GraduationProject.Member.DTO.JoinDTO;
-import Hoseo.GraduationProject.Member.DTO.VerificationCodeDTO;
+import Hoseo.GraduationProject.Member.DTO.*;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
@@ -60,7 +57,27 @@ public class MemberService {
         if(member == null) throw new BusinessLogicException(MemberExceptionType.NONE_MEMBER);
     }
 
-    public void CodeVerification(VerificationCodeDTO verificationCodeDTO){
+    public void codeVerification(VerificationCodeDTO verificationCodeDTO){
         redisRepository.findByCode(verificationCodeDTO);
+    }
+
+    public void changePassword(ChangePwDTO changePwDTO){
+        if(changePwDTO.getPassword().equals(changePwDTO.getCheckPw())){
+            Member member = memberRepository.findById(changePwDTO.getId()).orElseThrow(
+                    () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
+            try{
+                Member updatePwMember = Member.builder()
+                        .id(changePwDTO.getId())
+                        .role(member.getRole())
+                        .password(bCryptPasswordEncoder.encode(changePwDTO.getPassword()))
+                        .name(member.getName())
+                        .email(member.getEmail())
+                        .major(member.getMajor())
+                        .build();
+                memberRepository.save(updatePwMember);
+            } catch(Exception e){
+                throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
+            }
+        }
     }
 }
