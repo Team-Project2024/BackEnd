@@ -82,7 +82,7 @@ public class ReissueController {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
+        cookie.setMaxAge(6*60*60); // 6시간동안 쿠키에 유지
         //HTTPS 를 사용 할 경우에 true
         //cookie.setSecure(true);
         //쿠키가 적용될 범위

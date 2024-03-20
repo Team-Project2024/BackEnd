@@ -1,7 +1,9 @@
 package Hoseo.GraduationProject.Security.JWT;
 
+import Hoseo.GraduationProject.Member.DTO.LoginRequest;
 import Hoseo.GraduationProject.Security.Redis.RefreshToken;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 
@@ -26,26 +29,47 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JWTUtil jwtUtil;
 
+    private final ObjectMapper objectMapper;
+
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
+                       RefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.objectMapper = objectMapper;
     }
 
+//    @Override
+//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+//
+//        //클라이언트 요청에서 username, password 추출
+//        String username = obtainUsername(request);
+//        String password = obtainPassword(request);
+//
+//        //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+//
+//        //token에 담은 검증을 위한 AuthenticationManager로 전달
+//        return authenticationManager.authenticate(authToken);
+//    }
+
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
-        //클라이언트 요청에서 username, password 추출
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
-
-        //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
-
-        //token에 담은 검증을 위한 AuthenticationManager로 전달
-        return authenticationManager.authenticate(authToken);
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // 클라이언트에서 전송한 JSON 데이터를 DTO 클래스로 변환
+            LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+            // DTO 클래스에서 필요한 정보 추출
+            String username = loginRequest.getId();
+            String password = loginRequest.getPassword();
+            // UsernamePasswordAuthenticationToken 생성
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, Collections.emptyList());
+            // AuthenticationManager를 통해 인증 시도
+            return authenticationManager.authenticate(authToken);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse login request", e);
+        }
     }
 
     @Override
@@ -85,7 +109,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
+        cookie.setMaxAge(6*60*60); // 6시간
         //HTTPS 를 사용 할 경우에 true
         //cookie.setSecure(true);
         //쿠키가 적용될 범위

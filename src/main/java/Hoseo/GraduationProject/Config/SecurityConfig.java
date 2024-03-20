@@ -5,6 +5,7 @@ import Hoseo.GraduationProject.Security.JWT.JWTUtil;
 import Hoseo.GraduationProject.Security.JWT.LoginFilter;
 import Hoseo.GraduationProject.Security.Logout.CustomLogoutFilter;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,14 +31,17 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ObjectMapper objectMapper;
 
     @Value("${FrontURL}")
     private String frontUrl;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenRepository refreshTokenRepository){
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
+                          RefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper){
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.objectMapper = objectMapper;
     }
 
     // 비밀번호 암호화를 위한 BCrypt
@@ -96,7 +100,8 @@ public class SecurityConfig {
                 // 로그인 이전에 세션 생성
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
                 // 필터 추가
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository)
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
+                                refreshTokenRepository,objectMapper)
                         , UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshTokenRepository), LogoutFilter.class)
 

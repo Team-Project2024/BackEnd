@@ -1,13 +1,18 @@
 package Hoseo.GraduationProject.Member.Controller;
 
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
+import Hoseo.GraduationProject.Member.DTO.FindUserIdDTO;
+import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
 import Hoseo.GraduationProject.Member.DTO.JoinDTO;
+import Hoseo.GraduationProject.Member.DTO.VerificationCodeDTO;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
+import Hoseo.GraduationProject.Member.Service.MailSenderService;
 import Hoseo.GraduationProject.Member.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +24,7 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MailSenderService mailSenderService;
 
     @PostMapping("/join")
     public ResponseEntity<Void> joinProcess(
@@ -31,4 +37,28 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @GetMapping("/find-id")
+    public ResponseEntity<String> findId(
+            @Valid @RequestBody FindUserIdDTO findUserIdDTO
+            ){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.findId(findUserIdDTO));
+    }
+
+    @GetMapping("/find-pw")
+    public ResponseEntity<Void> findPw(
+            @Valid @RequestBody FindUserPWDTO findUserPWDTO
+    ) throws Exception {
+        memberService.findUser(findUserPWDTO);
+        mailSenderService.findPw(findUserPWDTO);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    //그 사용자만이 받을 수 있어야됨 인증번호를 이걸 메일로 전송해야되구나
+
+    @GetMapping("/code-verification")
+    public ResponseEntity<Void> CodeVerification(
+            @Valid @RequestBody VerificationCodeDTO verificationCodeDTO
+    ){
+        memberService.CodeVerification(verificationCodeDTO);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

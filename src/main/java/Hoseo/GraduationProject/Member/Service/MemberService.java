@@ -1,10 +1,14 @@
 package Hoseo.GraduationProject.Member.Service;
 
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
+import Hoseo.GraduationProject.Member.DTO.FindUserIdDTO;
+import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
 import Hoseo.GraduationProject.Member.DTO.JoinDTO;
+import Hoseo.GraduationProject.Member.DTO.VerificationCodeDTO;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
+import Hoseo.GraduationProject.Member.Repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RedisRepository redisRepository;
 
     public void joinProcess(JoinDTO joinDTO){
         // 학번이 같은 회원이 있는지 확인
@@ -42,5 +47,20 @@ public class MemberService {
                 memberRepository.save(newMember);
             }
         }
+    }
+
+    public String findId(FindUserIdDTO findUserIdDTO){
+        Member member = memberRepository.findByEmailAndName(findUserIdDTO.getEmail(),findUserIdDTO.getName());
+        if(member == null) throw new BusinessLogicException(MemberExceptionType.NONE_MEMBER);
+        return member.getId();
+    }
+
+    public void findUser(FindUserPWDTO findUserPWDTO){
+        Member member = memberRepository.findByIdAndEmailAndName(findUserPWDTO.getId(), findUserPWDTO.getEmail(),findUserPWDTO.getName());
+        if(member == null) throw new BusinessLogicException(MemberExceptionType.NONE_MEMBER);
+    }
+
+    public void CodeVerification(VerificationCodeDTO verificationCodeDTO){
+        redisRepository.findByCode(verificationCodeDTO);
     }
 }
