@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,8 +67,8 @@ public class ReissueController {
         String role = jwtUtil.getRole(refresh);
 
         //make new JWT
-        String newAccess = jwtUtil.createJwt("Access_Token", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("Refresh_Token", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("Access_Token", username, role, 1800000L); //30분
+        String newRefresh = jwtUtil.createJwt("Refresh_Token", username, role, 21600000L); //6시간
 
         refreshTokenRepository.delete(refresh);
 

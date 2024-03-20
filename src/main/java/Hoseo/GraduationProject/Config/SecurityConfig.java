@@ -3,6 +3,7 @@ package Hoseo.GraduationProject.Config;
 import Hoseo.GraduationProject.Security.JWT.JWTFilter;
 import Hoseo.GraduationProject.Security.JWT.JWTUtil;
 import Hoseo.GraduationProject.Security.JWT.LoginFilter;
+import Hoseo.GraduationProject.Security.Logout.CustomLogoutFilter;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -96,6 +98,7 @@ public class SecurityConfig {
                 // 필터 추가
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository)
                         , UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshTokenRepository), LogoutFilter.class)
 
         //세션 설정
                 .sessionManagement((session) -> session

@@ -25,7 +25,6 @@ public class RefreshTokenRepository {
     }
 
     public Optional<RefreshToken> findById(final String refreshToken) {
-        System.out.println("find : " + refreshToken);
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String memberId = valueOperations.get(refreshToken);
 
@@ -36,8 +35,7 @@ public class RefreshTokenRepository {
         return Optional.of(new RefreshToken(refreshToken, memberId));
     }
 
-    public boolean delete(final String refreshToken) {
-        boolean a= redisTemplate.delete(refreshToken);
-        return a;
+    public void delete(final String refreshToken) {
+        redisTemplate.delete(refreshToken);
     }
 }

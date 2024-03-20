@@ -2,18 +2,17 @@ package Hoseo.GraduationProject.Security.JWT;
 
 import Hoseo.GraduationProject.Security.Redis.RefreshToken;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
@@ -62,8 +61,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         //토큰 생성
-        String access = jwtUtil.createJwt("Access_Token", username, role, 600000L);
-        String refresh = jwtUtil.createJwt("Refresh_Token", username, role, 86400000L);
+        String access = jwtUtil.createJwt("Access_Token", username, role, 1800000L); // 30분
+        String refresh = jwtUtil.createJwt("Refresh_Token", username, role, 21600000L); //6시간
 
         // 로그인에 성공하면 Redis에 키 - RefreshToken 값에 - 유저 ID를 넣어서 저장
         RefreshToken refreshToken = new RefreshToken(refresh, username);
