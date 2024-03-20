@@ -28,8 +28,11 @@ public class JWTUtil {
 
     // secret key를 넣어서 검증을 하는 로직, claim 확인
     public String getUsername(String token) {
-
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("username", String.class);
+    }
+
+    public String getTokenType(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("tokenType", String.class);
     }
 
     public String getRole(String token) {
@@ -49,26 +52,19 @@ public class JWTUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
     }
 
-    public String createJwt(String id ,String username, String role, String email, String major, Long expiredMs) {
+    public String createJwt(String tokenType ,String username, String role, Long expiredMs) {
         Claims claims = Jwts.claims();
-        claims.put("id", id);
+        claims.put("tokenType",tokenType);
         claims.put("username", username);
         claims.put("role", role);
-        claims.put("email", email);
-        claims.put("major", major);
 
         String Token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
-//                .claim("token_type",jwtType.getTokenType())
                 .setIssuer("Kim")
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-//        if(jwtType.equals(JwtType.REFRESH_TOKEN)){
-//            redisRepository.saveRefresh(newToken, email, jwtType.getExpirationTime());
-//        }
 
         return Token;
     }

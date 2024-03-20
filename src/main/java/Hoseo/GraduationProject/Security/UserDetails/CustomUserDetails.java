@@ -12,14 +12,13 @@ public class CustomUserDetails implements UserDetails {
     @Getter
     private Member member;
 
-    public CustomUserDetails(Member member){ this.member = member; }
+    public CustomUserDetails(Member member){ this.member = member;}
 
     // 계정이 갖고있는 권한 목록을 리턴한다.  (권한이 여러개 있을수있어서 루프를 돌아야 하는데 우리는 한개만)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collectors = new ArrayList<>();
         collectors.add(() -> {
-//            return "ROLE_" + member.getRole();
             return member.getRole();
         }
         );
@@ -46,7 +45,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getName();
+        return member.getId();
     }
 
     @Override
