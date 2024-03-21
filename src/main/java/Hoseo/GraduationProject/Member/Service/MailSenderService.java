@@ -4,7 +4,6 @@ import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
 import Hoseo.GraduationProject.Member.Repository.RedisRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -29,7 +28,14 @@ public class MailSenderService {
         int randomNumber = random.nextInt(1000000);
 
         // 생성된 숫자를 6자리로 맞추기 위해 문자열로 변환
-        String sixDigitNumber = String.format("%06d", randomNumber);
+        String sixDigitNumber;
+
+        while(true){
+            sixDigitNumber = String.format("%06d", randomNumber);
+            if(redisRepository.save(sixDigitNumber, findUserPWDTO.getId())){
+                break;
+            }
+        }
 
         Context context = new Context();
         context.setVariable("message", "인증번호는");
@@ -46,7 +52,6 @@ public class MailSenderService {
 
         try {
             javaMailSender.send(mail);
-            redisRepository.save(sixDigitNumber, findUserPWDTO.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

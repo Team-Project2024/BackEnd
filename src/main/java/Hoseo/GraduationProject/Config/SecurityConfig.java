@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.Config;
 
+import Hoseo.GraduationProject.Security.Exception.CustomAccessDeniedHandler;
 import Hoseo.GraduationProject.Security.JWT.JWTFilter;
 import Hoseo.GraduationProject.Security.JWT.JWTUtil;
 import Hoseo.GraduationProject.Security.JWT.LoginFilter;
@@ -7,6 +8,7 @@ import Hoseo.GraduationProject.Security.Logout.CustomLogoutFilter;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -26,23 +29,17 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Value("${FrontURL}")
     private String frontUrl;
-
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
-                          RefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper){
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.objectMapper = objectMapper;
-    }
 
     // 비밀번호 암호화를 위한 BCrypt
     // Bcrypt는 단방향 해시 알고리즘이다. 따라서 복호화가 불가능
@@ -76,21 +73,20 @@ public class SecurityConfig {
                         configuration.setMaxAge(3600L);
 
                         // Token 헤더 허용
-                        configuration.setExposedHeaders(Collections.singletonList("AccessToken"));
-                        configuration.setExposedHeaders(Collections.singletonList("RefreshToken"));
+                        configuration.setExposedHeaders(Collections.singletonList("Access_Token"));
 
                         return configuration;
                     }
                 }))
                 .csrf((auth) -> auth.disable())
 
-        //From 로그인 방식 disable
+                //From 로그인 방식 disable
                 .formLogin((auth) -> auth.disable())
 
-        //http basic 인증 방식 disable
+                //http basic 인증 방식 disable
                 .httpBasic((auth) -> auth.disable())
 
-        //경로별 인가 작업
+                //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/student/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
                         .requestMatchers("/api/professor/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
@@ -105,9 +101,11 @@ public class SecurityConfig {
                         , UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshTokenRepository), LogoutFilter.class)
 
-        //세션 설정
+                //세션 설정
                 .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling.accessDeniedHandler(customAccessDeniedHandler));
 
         return http.build();
     }

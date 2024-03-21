@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.Security.UserDetails;
 
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
 import Hoseo.GraduationProject.Security.ExceptionType.SecurityExceptionType;
