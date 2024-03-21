@@ -1,16 +1,22 @@
 package Hoseo.GraduationProject.Security.JWT;
 
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +27,7 @@ public class ReissueController {
 
     // Controller와 Service Layer 분리 ㄱㄱ
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         //get refresh token
         String refresh = null;
@@ -73,8 +79,18 @@ public class ReissueController {
         refreshTokenRepository.delete(refresh);
 
         //response 여기에서 우리는 Refresh_Token을 탈취를 방어하기 위해 Refresh Rotate를 사용 (재발급 요청마다 새로운 Refresh_Token을 전달해줌)
-        response.setHeader("Access_Token", newAccess);
+        response.setContentType("application/json");
+
         response.addCookie(createCookie("Refresh_Token", newRefresh));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("Access_Token", newAccess);
+        String responseBodyJson = objectMapper.writeValueAsString(responseBody);
+
+        PrintWriter writer = response.getWriter();
+        writer.println(responseBodyJson);
+        writer.flush();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

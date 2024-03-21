@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class ChangePwDTO {
     @NotBlank
+    @Pattern(regexp = "^(\\d{6}|\\d{8})$", message = "ID는 6자리 또는 8자리이어야 한다.")
     private String id;
 
     @NotBlank

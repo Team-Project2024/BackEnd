@@ -29,7 +29,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
-
             filterChain.doFilter(request, response);
 
             return;
@@ -42,7 +41,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             //response body
             PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
+            writer.print("access token 만료");
 
             //response status code
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -56,7 +55,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             //response body
             PrintWriter writer = response.getWriter();
-            writer.print("Access Token이 만료 되었습니다.");
+            writer.print("Access Token이 아닙니다.");
 
             //response status code
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -68,7 +67,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(accessToken);
 
         Member member = Member.builder()
-                .id(id) // 이거 Id로 변경 원함
+                .id(id)
                 .role(role)
                 .build();
         CustomUserDetails customUserDetails = new CustomUserDetails(member);

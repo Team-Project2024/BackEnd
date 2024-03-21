@@ -1,5 +1,7 @@
 package Hoseo.GraduationProject.Member.DTO;
 
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
+import Hoseo.GraduationProject.Security.ExceptionType.SecurityExceptionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
