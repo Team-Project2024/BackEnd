@@ -4,12 +4,15 @@ import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.DTO.VerificationCodeDTO;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class RedisRepository {
@@ -34,6 +37,7 @@ public class RedisRepository {
         String memberId = valueOperations.get(verificationCodeDTO.getCode());
 
         if (Objects.isNull(memberId) || !memberId.equals(verificationCodeDTO.getId())) {
+            log.error("error log={}", MemberExceptionType.INVALID_CODE.getErrorMessage());
             throw new BusinessLogicException(MemberExceptionType.INVALID_CODE);
         }
     }

@@ -1,7 +1,6 @@
 package Hoseo.GraduationProject.Security.JWT;
 
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
