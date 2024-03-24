@@ -4,6 +4,7 @@ import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
 import Hoseo.GraduationProject.Member.Repository.RedisRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,7 @@ import org.thymeleaf.context.Context;
 
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailSenderService {
@@ -35,6 +37,7 @@ public class MailSenderService {
             if(redisRepository.save(sixDigitNumber, findUserPWDTO.getId())){
                 break;
             }
+            log.warn("warn log={}", sixDigitNumber); // 얼마나 자주 값이 겹치는지 확인
         }
 
         Context context = new Context();
@@ -53,7 +56,7 @@ public class MailSenderService {
         try {
             javaMailSender.send(mail);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("error log={}", "메일 전송 실패");
         }
     }
 }

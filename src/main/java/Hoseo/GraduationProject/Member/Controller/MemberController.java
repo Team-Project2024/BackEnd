@@ -46,7 +46,6 @@ public class MemberController {
         mailSenderService.findPw(findUserPWDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-    //그 사용자만이 받을 수 있어야됨 인증번호를 이걸 메일로 전송해야되구나
 
     @GetMapping("/code-verification")
     public ResponseEntity<Void> CodeVerification(

@@ -1,20 +1,19 @@
 package Hoseo.GraduationProject.Security.JWT;
 
-import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Exception.ErrorResponse;
 import Hoseo.GraduationProject.Exception.ExceptionType;
 import Hoseo.GraduationProject.Member.DTO.LoginRequest;
 import Hoseo.GraduationProject.Security.ExceptionType.SecurityExceptionType;
 import Hoseo.GraduationProject.Security.Redis.RefreshToken;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -41,6 +40,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper;
 
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
                        RefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper) {

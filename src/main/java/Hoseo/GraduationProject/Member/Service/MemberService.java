@@ -7,11 +7,13 @@ import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
 import Hoseo.GraduationProject.Member.Repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -30,6 +32,7 @@ public class MemberService {
         } else{
             // ADMIN 계정은 서버를 통해 가입 불가능
             if(String.valueOf(joinDTO.getRole()).equals("ADMIN")){
+                log.error("error log={}", MemberExceptionType.NOT_ACCESS_LEVEL.getErrorMessage());
                 throw new BusinessLogicException(MemberExceptionType.NOT_ACCESS_LEVEL);
             } else{
                 Member newMember = Member.builder()
@@ -76,6 +79,7 @@ public class MemberService {
                         .build();
                 memberRepository.save(updatePwMember);
             } catch(Exception e){
+
                 throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
             }
         }
