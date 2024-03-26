@@ -144,8 +144,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //JavaScript로 접근 불가능하게 막음
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setHttpOnly(false);
 
         return cookie;
     }
