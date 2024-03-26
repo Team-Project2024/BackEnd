@@ -103,6 +103,7 @@ public class ReissueController {
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //JavaScript로 접근 불가능하게 막음
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
 
         return cookie;

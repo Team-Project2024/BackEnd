@@ -31,14 +31,14 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/find-id")
+    @PostMapping("/find-id")
     public ResponseEntity<String> findId(
             @Valid @RequestBody FindUserIdDTO findUserIdDTO
             ){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.findId(findUserIdDTO));
     }
 
-    @GetMapping("/find-pw")
+    @PostMapping("/find-pw")
     public ResponseEntity<Void> findPw(
             @Valid @RequestBody FindUserPWDTO findUserPWDTO
     ) throws Exception {
@@ -47,7 +47,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/code-verification")
+    @PostMapping("/code-verification")
     public ResponseEntity<Void> CodeVerification(
             @Valid @RequestBody VerificationCodeDTO verificationCodeDTO
     ){
@@ -55,7 +55,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping("/change-password")
+    @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(
             @Valid @RequestBody ChangePwDTO changePwDTO
     ){
