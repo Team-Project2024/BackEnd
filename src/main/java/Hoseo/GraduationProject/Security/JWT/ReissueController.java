@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -107,8 +108,9 @@ public class ReissueController {
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //JavaScript로 접근 불가능하게 막음
-        cookie.setSecure(false);
-        cookie.setHttpOnly(false);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite","None");
+        cookie.setHttpOnly(true);
 
         return cookie;
     }
