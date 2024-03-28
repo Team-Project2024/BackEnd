@@ -11,19 +11,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdminController {
 
-    @GetMapping("/api/admin")
+    @GetMapping("/admin")
     public String admin(@AuthenticationPrincipal CustomUserDetails custom){
         return custom.getId();
     }
 
-    @GetMapping("/api/student")
+    @GetMapping("/student")
     public String student(){
         return "student";
     }
 
-    @GetMapping("/api/professor")
+    @GetMapping("/professor")
     public String professor(){
         return "professor";
+    }
+
+    @GetMapping("/api")
+    public String all(){
+        return "all";
     }
 
     @GetMapping("/test")

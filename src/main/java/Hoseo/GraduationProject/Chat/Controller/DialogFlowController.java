@@ -1,5 +1,7 @@
 package Hoseo.GraduationProject.Chat.Controller;
 
+import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookRequest;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookResponse;
@@ -12,17 +14,18 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/orchid/api")
+@RequestMapping("/api/chat")
 public class DialogFlowController {
 
     private static JacksonFactory jacksonFactory = JacksonFactory.getDefaultInstance();
 
-    @RequestMapping(method = RequestMethod.POST, value = "/dialogFlowWebHook")
+    @PostMapping("/dialogFlowWebHook")
     public ResponseEntity<?> dialogFlowWebHook(@RequestBody String requestStr, HttpServletRequest servletRequest) throws IOException {
-
+        System.out.println(requestStr);
         try {
             GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse(); // response 객체
-            GoogleCloudDialogflowV2WebhookRequest request = jacksonFactory.createJsonParser(requestStr).parse(GoogleCloudDialogflowV2WebhookRequest.class); // request 객체에서 파싱
+            GoogleCloudDialogflowV2WebhookRequest request =
+                    jacksonFactory.createJsonParser(requestStr).parse(GoogleCloudDialogflowV2WebhookRequest.class); // request 객체에서 파싱
 
             Map<String,Object> params = request.getQueryResult().getParameters(); // 파라미터 받아서 map에다 저장
 
@@ -31,13 +34,13 @@ public class DialogFlowController {
                 response.setFulfillmentText("다음과 같은 파라미터가 나왔습니다 " + params.toString());
             }
             else {
-                response.setFulfillmentText("Sorry you didn't send enough to process");
+                response.setFulfillmentText("전송에 실패하였습니다.");
             }
 
             return new ResponseEntity<GoogleCloudDialogflowV2WebhookResponse>(response, HttpStatus.OK);
         }
         catch (Exception ex) {
-            return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 에러 발생 시 bad request 보내줌
+            throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
         }
     }
 }

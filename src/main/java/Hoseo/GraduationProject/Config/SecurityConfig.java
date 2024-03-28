@@ -88,9 +88,9 @@ public class SecurityConfig {
 
                 //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/student/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
-                        .requestMatchers("/api/professor/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
-                        .requestMatchers("/api/admin/**", "/api/student/**", "/api/professor/**").hasRole("ADMIN") // ADMIN은 모든 패턴에 접근 가능
+                        .requestMatchers("/student/**","/api/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
+                        .requestMatchers("/professor/**","/api/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
+                        .requestMatchers("/admin/**", "/student/**", "/professor/**","/api/**").hasRole("ADMIN") // ADMIN은 모든 패턴에 접근 가능
                         .anyRequest().permitAll()) //나머지는 모두에게 권한 있음
 
                 // 로그인 이전에 세션 생성
