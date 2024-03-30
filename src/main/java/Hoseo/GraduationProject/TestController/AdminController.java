@@ -17,8 +17,8 @@ public class AdminController {
     }
 
     @GetMapping("/student")
-    public String student(){
-        return "student";
+    public String student(@AuthenticationPrincipal CustomUserDetails custom){
+        return custom.getId();
     }
 
     @GetMapping("/professor")
@@ -27,13 +27,8 @@ public class AdminController {
     }
 
     @GetMapping("/api")
-    public String all(){
-        return "all";
-    }
-
-    @GetMapping("/test")
-    public String test(){
-        throw new BusinessLogicException(SecurityExceptionType.ID_ERROR);
+    public String all(@AuthenticationPrincipal CustomUserDetails custom){
+        return custom.getId();
     }
 
 }

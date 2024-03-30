@@ -5,6 +5,7 @@ import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
 import Hoseo.GraduationProject.Chat.Service.ChatService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
+import com.google.api.Http;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookRequest;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookResponse;
@@ -27,9 +28,19 @@ public class DialogFlowController {
 
     private final ChatService chatService;
 
+    @PostMapping("/test")
+    public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member, @RequestParam String message){
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatService.testCreateChat(member.getId(),message));
+    }
+
     @GetMapping
-    public ResponseEntity<ResponseChatDTO> getChat(@AuthenticationPrincipal CustomUserDetails custom){
-        return ResponseEntity.status(200).body(chatService.getChat(custom.getId()));
+    public ResponseEntity<ResponseChatDTO> getChat(@AuthenticationPrincipal CustomUserDetails member){
+        ResponseChatDTO responseChatDTO = chatService.getChat(member.getId());
+        if(responseChatDTO.getUserChat().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseChatDTO);
+        } else{
+            return ResponseEntity.status(HttpStatus.OK).body(responseChatDTO);
+        }
     }
 
     @PostMapping
@@ -55,6 +66,12 @@ public class DialogFlowController {
         catch (Exception ex) {
             throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
         }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteChat(@AuthenticationPrincipal CustomUserDetails member){
+        chatService.deleteChat(member.getId());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 //    @RequestMapping("/detectIntentTexts")

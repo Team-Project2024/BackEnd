@@ -42,7 +42,7 @@ public class Member {
     @Column(name = "major")
     private String major;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<UserChat> userChats = new ArrayList<>();
 
     @Builder

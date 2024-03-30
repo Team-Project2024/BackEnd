@@ -19,7 +19,7 @@ public class ChatBot {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_chat_id", unique = true)
     private UserChat userChat;
 
