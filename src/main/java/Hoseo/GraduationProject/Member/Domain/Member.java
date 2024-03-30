@@ -45,6 +45,10 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<UserChat> userChats = new ArrayList<>();
 
+    public void updatePassword(String password){
+        this.password = password;
+    }
+
     @Builder
     Member(String id, String password, String name,
            String email, String role, String major){

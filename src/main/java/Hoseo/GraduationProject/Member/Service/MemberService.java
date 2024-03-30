@@ -69,17 +69,9 @@ public class MemberService {
             Member member = memberRepository.findById(changePwDTO.getId()).orElseThrow(
                     () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
             try{
-                Member updatePwMember = Member.builder()
-                        .id(changePwDTO.getId())
-                        .role(member.getRole())
-                        .password(bCryptPasswordEncoder.encode(changePwDTO.getPassword()))
-                        .name(member.getName())
-                        .email(member.getEmail())
-                        .major(member.getMajor())
-                        .build();
-                memberRepository.save(updatePwMember);
+                member.updatePassword(bCryptPasswordEncoder.encode(changePwDTO.getPassword()));
+                memberRepository.save(member);
             } catch(Exception e){
-
                 throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
             }
         }

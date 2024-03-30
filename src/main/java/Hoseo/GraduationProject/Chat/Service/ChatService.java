@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,6 +53,7 @@ public class ChatService {
     }
 
     public ResponseChatDTO getChat(String memberId){
+        //여기에서 userchat은 쿼리 하나로 처리되는데 chat_bot의 채팅은 쿼리가 여러번 날아가는 N+1 문제가 있음 이건 어떻게 처리?
         List<UserChat> userChats = userChatRepository.findByMemberId(memberId);
 
         // Response DTO를 생성하여 필요한 정보를 매핑합니다.
