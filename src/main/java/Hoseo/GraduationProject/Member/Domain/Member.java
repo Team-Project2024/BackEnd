@@ -1,14 +1,15 @@
 package Hoseo.GraduationProject.Member.Domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import Hoseo.GraduationProject.Chat.Domain.UserChat;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +41,9 @@ public class Member {
     @NotBlank
     @Column(name = "major")
     private String major;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<UserChat> userChats = new ArrayList<>();
 
     @Builder
     Member(String id, String password, String name,

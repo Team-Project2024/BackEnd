@@ -46,7 +46,7 @@ dependencies {
 
 	implementation 'com.google.code.gson:gson:2.6.2'
 	implementation 'com.google.apis:google-api-services-dialogflow:v2beta1-rev15-1.23.0'
-
+	implementation group: 'com.google.cloud', name: 'google-cloud-dialogflow', version: '4.43.0'
 }
 
 tasks.named('test') {
