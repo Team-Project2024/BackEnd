@@ -18,7 +18,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -26,6 +25,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
+
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
 
 @Configuration
 @EnableWebSecurity
@@ -88,10 +90,12 @@ public class SecurityConfig {
 
                 //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/student/**","/api/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
-                        .requestMatchers("/professor/**","/api/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
-                        .requestMatchers("/admin/**", "/student/**", "/professor/**","/api/**").hasRole("ADMIN") // ADMIN은 모든 패턴에 접근 가능
-                        .anyRequest().permitAll()) //나머지는 모두에게 권한 있음
+                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/professor/**").hasRole("PROFESSOR")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+
 
                 // 로그인 이전에 세션 생성
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
