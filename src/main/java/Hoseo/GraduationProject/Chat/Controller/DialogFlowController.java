@@ -1,5 +1,7 @@
 package Hoseo.GraduationProject.Chat.Controller;
 
+import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
+import Hoseo.GraduationProject.Chat.DTO.DjangoTestDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
 import Hoseo.GraduationProject.Chat.Service.ChatService;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -66,6 +70,23 @@ public class DialogFlowController {
         catch (Exception ex) {
             throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
         }
+    }
+
+    @PostMapping("/django")
+    public ResponseEntity<Void> djangoTest(){
+        WebClient webClient = WebClient.create("http://127.0.0.1:8000");
+
+        DjangoTestDTO djangoTestDTO = new DjangoTestDTO();
+        djangoTestDTO.setContent("aa");
+
+        webClient.post()
+                .uri("/chat/")
+                .body(BodyInserters.fromValue(djangoTestDTO))
+                .retrieve()
+                .bodyToMono(String.class)
+                .subscribe(response -> System.out.println("Response from Django: " + response));
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping

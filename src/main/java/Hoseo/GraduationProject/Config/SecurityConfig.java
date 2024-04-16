@@ -26,9 +26,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
 
-import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
-import static org.springframework.security.authorization.AuthorizationManagers.allOf;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor

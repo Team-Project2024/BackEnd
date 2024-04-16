@@ -72,6 +72,7 @@ public class ChatService {
             //UserChatDTO 설정
             userChatDTO.setId(userChat.getId());
             userChatDTO.setContent(userChat.getContent());
+            userChatDTO.setChatDate(userChat.getChatDate());
 
             //ChatBotDTO 설정
             chatBotDTO.setId(chatBot.getId());
