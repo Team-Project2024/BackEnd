@@ -1,13 +1,11 @@
 package Hoseo.GraduationProject.Chat.Controller;
 
-import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.DjangoTestDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
 import Hoseo.GraduationProject.Chat.Service.ChatService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
-import com.google.api.Http;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookRequest;
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookResponse;
