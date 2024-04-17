@@ -11,6 +11,7 @@ import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2W
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,15 +27,46 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DialogFlowController {
 
+    @Value("${DjangoURL}")
+    private String djangoUrl;
+
     private static JacksonFactory jacksonFactory = JacksonFactory.getDefaultInstance();
 
     private final ChatService chatService;
 
+    /**
+    * 채팅 메서드
+    * */
     @PostMapping("/test")
     public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member, @RequestParam String message){
+        /**
+         * 메시지를 받아서 dialogflow에 전송
+         * dialogflow로부터 intent, entity를 리턴받음
+         *
+         * Django에 dialogflow로부터 intent를 기준으로 다른 엔드포인트에 요청을 보냄(리턴받은 entity와 사용자의 학번을 전송함)
+         * 여기에서 데이터를 받는것은 우리가 정하면 되는데
+         * {
+         *  subject: "과목추천",
+         *  content: [
+         *      {pk:00x12, name:"소프트웨어 공학"},~,~,~
+         *  ]
+         * }
+         * 이게 정배라고 생각함
+         *
+         * 그리고서 이걸 프론트에 보내주는게 문제인데
+         * 1안. 채팅 형태로 채팅을 반환해준다.
+         * 2안. 데이터만을 보내줘서 프론트에서 가공한다.
+         * 사실은 챗봇에서 대답 형태로 맞는거같은데
+         * 2안으로 가면 받은 데이터를 json으로 저장하고 pk에 있는 값을 모두 entity를 조회해서 entity별로 전송해줘야됨
+         * 근데 여기에서 entity마다 변수값이 다르기 때문에 subject부분을 붙여서 전달하는게 필요함 이게 맞나 ㅋㅋ,,,
+         */
+
         return ResponseEntity.status(HttpStatus.CREATED).body(chatService.testCreateChat(member.getId(),message));
     }
 
+    /**
+     * 채팅 내역을 가져오는 메서드
+     * */
     @GetMapping
     public ResponseEntity<ResponseChatDTO> getChat(@AuthenticationPrincipal CustomUserDetails member){
         ResponseChatDTO responseChatDTO = chatService.getChat(member.getId());
@@ -45,6 +77,10 @@ public class DialogFlowController {
         }
     }
 
+    /**
+     * dialog Flow를 통해 질문의 인텐트를 분석해서 인텐트와 엔티티를 받아올거임
+     * 이거 변경 필요함 dialogflow 레퍼런스에는 이거 아님
+     * */
     @PostMapping
     public ResponseEntity<?> dialogFlowWebHook(@RequestBody String requestStr, HttpServletRequest servletRequest) throws IOException {
         System.out.println(requestStr);
@@ -70,9 +106,12 @@ public class DialogFlowController {
         }
     }
 
+    /**
+     * Django로 데이터를 주고 받는다. 모든 요청들이 Django로 연동 될 것이고 인텐트, 엔티티(리스트), 사용자 정보를 넘겨줄거임
+     * */
     @PostMapping("/django")
     public ResponseEntity<Void> djangoTest(){
-        WebClient webClient = WebClient.create("http://127.0.0.1:8000");
+        WebClient webClient = WebClient.create(djangoUrl);
 
         DjangoTestDTO djangoTestDTO = new DjangoTestDTO();
         djangoTestDTO.setContent("aa");
@@ -87,6 +126,9 @@ public class DialogFlowController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * 사용자의 지난 채팅 내역 전부 삭제
+     * */
     @DeleteMapping
     public ResponseEntity<Void> deleteChat(@AuthenticationPrincipal CustomUserDetails member){
         chatService.deleteChat(member.getId());
