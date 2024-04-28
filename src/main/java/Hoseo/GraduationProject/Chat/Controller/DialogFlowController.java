@@ -30,7 +30,7 @@ public class DialogFlowController {
     @Value("${DjangoURL}")
     private String djangoUrl;
 
-    private static JacksonFactory jacksonFactory = JacksonFactory.getDefaultInstance();
+    private static final JacksonFactory jacksonFactory = JacksonFactory.getDefaultInstance();
 
     private final ChatService chatService;
 
@@ -52,6 +52,7 @@ public class DialogFlowController {
          *  ]
          * }
          * 이게 정배라고 생각함
+         * --- 이 부분 마이크로 서비스에서 문장 형태 + pk 값으로 전달해준다니까 우선 대기 ---
          *
          * 그리고서 이걸 프론트에 보내주는게 문제인데
          * 1안. 채팅 형태로 채팅을 반환해준다.
@@ -79,7 +80,6 @@ public class DialogFlowController {
 
     /**
      * dialog Flow를 통해 질문의 인텐트를 분석해서 인텐트와 엔티티를 받아올거임
-     * 이거 변경 필요함 dialogflow 레퍼런스에는 이거 아님
      * */
     @PostMapping
     public ResponseEntity<?> dialogFlowWebHook(@RequestBody String requestStr, HttpServletRequest servletRequest) throws IOException {
@@ -91,7 +91,7 @@ public class DialogFlowController {
 
             Map<String,Object> params = request.getQueryResult().getParameters(); // 파라미터 받아서 map에다 저장
 
-            if (params.size() > 0) {
+            if (!params.isEmpty()) {
                 System.out.println(params);
                 response.setFulfillmentText("다음과 같은 파라미터가 나왔습니다 " + params.toString());
             }

@@ -40,7 +40,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public String getMajor() {
-        return member.getMajor();
+        return member.getMajor().getDepartment();
     }
 
     @Override
