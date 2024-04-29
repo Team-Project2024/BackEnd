@@ -6,9 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @Table(name = "lecture")
@@ -74,12 +71,14 @@ public class Lecture {
     @Column(name = "course_evaluation")
     private String course_evaluation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //교수 정보
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CourseDetails> courseDetails = new ArrayList<>();
+//    @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
+//    private List<CourseDetails> courseDetails = new ArrayList<>();
 
     @Builder
     Lecture(Long id, String lectureName, String classification, String room,
