@@ -13,8 +13,12 @@ import lombok.NoArgsConstructor;
 public class ConfirmCompletion {
 
     @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", unique = true)
+    @Column(name="id")
+    private Long id;
+
+//    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "member_id", unique = true)
     private Member member;
 
     @Column(name = "character_culture")
@@ -39,8 +43,9 @@ public class ConfirmCompletion {
     private Long graduationCredits;
 
     @Builder
-    ConfirmCompletion(Member member, Long characterCulture, Long basicLiberalArts,
+    ConfirmCompletion(Long id, Member member, Long characterCulture, Long basicLiberalArts,
     Long generalLiberalArts, Long majorCommon, Long majorAdvanced, Long freeChoice, Long graduationCredits){
+        this.id = id;
         this.member = member;
         this.characterCulture = characterCulture;
         this.basicLiberalArts = basicLiberalArts;

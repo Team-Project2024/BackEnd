@@ -1,6 +1,5 @@
 package Hoseo.GraduationProject.Domain;
 
-import Hoseo.GraduationProject.Member.Domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
-import java.util.List;
 
 @Entity
 @Getter
@@ -33,11 +31,11 @@ public class Major {
     @Column(name = "track")
     private String track;
 
-    @OneToMany(mappedBy = "major", cascade = CascadeType.ALL)
-    private List<Member> member;
+//    @OneToMany(mappedBy = "major", cascade = CascadeType.REMOVE)
+//    private List<Member> member;
 
-    @OneToMany(mappedBy = "major", cascade = CascadeType.ALL)
-    private List<GraduationRequirements> graduationRequirements;
+//    @OneToMany(mappedBy = "major", cascade = CascadeType.REMOVE)
+//    private List<GraduationRequirements> graduationRequirements;
 
     @Builder
     Major(Long majorId, String college,

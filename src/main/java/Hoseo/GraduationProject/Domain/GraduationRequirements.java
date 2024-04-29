@@ -42,7 +42,8 @@ public class GraduationRequirements {
     @Column(name = "graduation_credits")
     private Long graduationCredits;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "major_id")
     private Major major;
 

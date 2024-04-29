@@ -1,9 +1,5 @@
 package Hoseo.GraduationProject.Member.Domain;
 
-import Hoseo.GraduationProject.Chat.Domain.UserChat;
-import Hoseo.GraduationProject.Domain.ConfirmCompletion;
-import Hoseo.GraduationProject.Domain.CourseDetails;
-import Hoseo.GraduationProject.Domain.Lecture;
 import Hoseo.GraduationProject.Domain.Major;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,9 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -58,22 +51,23 @@ public class Member {
     @Column(name="harnessing_resource")
     private Long harnessingResource;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "major_id")
     private Major major;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserChat> userChats = new ArrayList<>();
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<UserChat> userChats = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private ConfirmCompletion confirmCompletion;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Lecture> lectures = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CourseDetails> courseDetails = new ArrayList<>();
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "id")
+//    private ConfirmCompletion confirmCompletion;
+//
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<Lecture> lectures = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<CourseDetails> courseDetails = new ArrayList<>();
 
     public void updatePassword(String password){
         this.password = password;
