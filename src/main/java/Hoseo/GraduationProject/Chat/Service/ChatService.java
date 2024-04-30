@@ -2,6 +2,7 @@ package Hoseo.GraduationProject.Chat.Service;
 
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
@@ -11,6 +12,7 @@ import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
 import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
+import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,47 @@ public class ChatService {
     private final ChatBotRepository chatBotRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    @Transactional
+    public Long createChatRoom(Member member){
+        ChatRoom chatRoom = ChatRoom.builder()
+                .member(member)
+                .build();
+        chatRoomRepository.save(chatRoom);
+
+        return chatRoom.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResponseChatRoomDTO> getChatRoomList(Member member){
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberId(member.getId());
+        List<ResponseChatRoomDTO> responseChatRoomDTOList = new ArrayList<>();
+
+        for(ChatRoom chatRoom : chatRooms){
+            ResponseChatRoomDTO responseChatRoomDTO = new ResponseChatRoomDTO();
+            responseChatRoomDTO.setChatRoomId(chatRoom.getId());
+            responseChatRoomDTO.setFirstChat(chatRoom.getFirstChat());
+            responseChatRoomDTO.setLastChatDate(chatRoom.getLastChatDate());
+            responseChatRoomDTOList.add(responseChatRoomDTO);
+        }
+
+        return responseChatRoomDTOList;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteChatRoom(Member member, Long chatRoomId){
+        //채팅방 삭제
+        chatBotRepository.deleteByChatRoomId(chatRoomId);
+        userChatRepository.deleteByChatRoomId(chatRoomId);
+        chatRoomRepository.deleteByIdAndMemberId(chatRoomId, member.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAllChatRoom(Member member){
+        chatBotRepository.deleteByMemberId(member.getId());
+        userChatRepository.deleteByMemberId(member.getId());
+        chatRoomRepository.deleteAllByMemberId(member.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public String testCreateChat(CustomUserDetails member, String message, Long chatRoomId){
         String answer = "Chat Answer";
         ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).get();
@@ -53,6 +95,7 @@ public class ChatService {
         return answer;
     }
 
+    @Transactional(readOnly = true)
     public ResponseChatDTO getChat(Long chatRoomId){
         List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
 
