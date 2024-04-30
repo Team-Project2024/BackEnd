@@ -2,6 +2,7 @@ package Hoseo.GraduationProject.Chat.Service;
 
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
@@ -11,6 +12,7 @@ import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
 import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
+import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,30 @@ public class ChatService {
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
     private final ChatRoomRepository chatRoomRepository;
+
+    public Long createChatRoom(Member member){
+        ChatRoom chatRoom = ChatRoom.builder()
+                .member(member)
+                .build();
+        chatRoomRepository.save(chatRoom);
+
+        return chatRoom.getId();
+    }
+
+    public List<ResponseChatRoomDTO> getChatRoomList(Member member){
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberId(member.getId());
+        List<ResponseChatRoomDTO> responseChatRoomDTOList = new ArrayList<>();
+
+        for(ChatRoom chatRoom : chatRooms){
+            ResponseChatRoomDTO responseChatRoomDTO = new ResponseChatRoomDTO();
+            responseChatRoomDTO.setChatRoomId(chatRoom.getId());
+            responseChatRoomDTO.setFirstChat(chatRoom.getFirstChat());
+            responseChatRoomDTO.setLastChatDate(chatRoom.getLastChatDate());
+            responseChatRoomDTOList.add(responseChatRoomDTO);
+        }
+
+        return responseChatRoomDTOList;
+    }
 
     @Transactional
     public String testCreateChat(CustomUserDetails member, String message, Long chatRoomId){
