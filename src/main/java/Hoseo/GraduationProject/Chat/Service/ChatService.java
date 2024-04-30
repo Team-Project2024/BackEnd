@@ -4,14 +4,14 @@ import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
+import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
 import Hoseo.GraduationProject.Chat.Domain.UserChat;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
 import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
+import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
-import Hoseo.GraduationProject.Member.Domain.Member;
-import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
-import Hoseo.GraduationProject.Member.Repository.MemberRepository;
+import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +25,17 @@ import java.util.List;
 public class ChatService {
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
-    private final MemberRepository memberRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
-    public String testCreateChat(String memberId,String message){
+    public String testCreateChat(CustomUserDetails member, String message, Long chatRoomId){
         String answer = "Chat Answer";
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
+        ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).get();
+        chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
 
         UserChat userChat = UserChat.builder()
                 .chatDate(new Timestamp(System.currentTimeMillis()))
-                .member(member)
+                .chatRoom(chatroom)
                 .content(message)
                 .build();
 
@@ -44,6 +44,7 @@ public class ChatService {
                 .userChat(userChat)
                 .build();
         try{
+            chatRoomRepository.save(chatroom);
             userChatRepository.save(userChat);
             chatBotRepository.save(chatBot);
         } catch (Exception e){
@@ -52,9 +53,8 @@ public class ChatService {
         return answer;
     }
 
-    public ResponseChatDTO getChat(String memberId){
-        //여기에서 userchat은 쿼리 하나로 처리되는데 chat_bot의 채팅은 쿼리가 여러번 날아가는 N+1 문제가 있음 이건 어떻게 처리?
-        List<UserChat> userChats = userChatRepository.findByMemberId(memberId);
+    public ResponseChatDTO getChat(Long chatRoomId){
+        List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
 
         // Response DTO를 생성하여 필요한 정보를 매핑합니다.
         ResponseChatDTO responseChatDTO = new ResponseChatDTO();
@@ -86,16 +86,5 @@ public class ChatService {
         responseChatDTO.setChatBot(chatBotDTOS);
 
         return responseChatDTO;
-    }
-
-    @Transactional
-    public void deleteChat(String memberId){
-        try{
-            // userChat의 ID를 가지는 chatBot을 먼저 삭제
-            chatBotRepository.deleteChatBotByMemberId(memberId);
-            userChatRepository.deleteUserChatByMemberId(memberId);
-        } catch(Exception e){
-            throw new BusinessLogicException(ChatExceptionType.DELETE_CHAT_ERROR);
-        }
     }
 }

@@ -34,11 +34,13 @@ public class DialogFlowController {
 
     private final ChatService chatService;
 
+    //채팅방 만들기 + 채팅방 목록 조회, 채팅방 삭제하면서 유저 채팅과 챗봇 채팅 삭제
+
     /**
     * 채팅 메서드
     * */
     @PostMapping("/test")
-    public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member, @RequestParam String message){
+    public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member, @RequestParam String message, @RequestParam Long chatRoomId){
         /**
          * 메시지를 받아서 dialogflow에 전송
          * dialogflow로부터 intent, entity를 리턴받음
@@ -62,15 +64,15 @@ public class DialogFlowController {
          * 근데 여기에서 entity마다 변수값이 다르기 때문에 subject부분을 붙여서 전달하는게 필요함 이게 맞나 ㅋㅋ,,,
          */
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatService.testCreateChat(member.getId(),message));
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatService.testCreateChat(member, message, chatRoomId));
     }
 
     /**
      * 채팅 내역을 가져오는 메서드
      * */
     @GetMapping
-    public ResponseEntity<ResponseChatDTO> getChat(@AuthenticationPrincipal CustomUserDetails member){
-        ResponseChatDTO responseChatDTO = chatService.getChat(member.getId());
+    public ResponseEntity<ResponseChatDTO> getChat(@RequestParam Long chatRoomId){
+        ResponseChatDTO responseChatDTO = chatService.getChat(chatRoomId);
         if(responseChatDTO.getUserChat().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseChatDTO);
         } else{
@@ -126,14 +128,6 @@ public class DialogFlowController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    /**
-     * 사용자의 지난 채팅 내역 전부 삭제
-     * */
-    @DeleteMapping
-    public ResponseEntity<Void> deleteChat(@AuthenticationPrincipal CustomUserDetails member){
-        chatService.deleteChat(member.getId());
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 
 //    @RequestMapping("/detectIntentTexts")
 //    @PostMapping
