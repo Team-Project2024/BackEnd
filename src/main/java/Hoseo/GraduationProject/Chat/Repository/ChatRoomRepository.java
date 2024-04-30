@@ -16,4 +16,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Modifying
     @Query(value = "DELETE FROM chat_room WHERE id = :id AND member_id = :memberId", nativeQuery = true)
     void deleteByIdAndMemberId(@Param("id") Long id, @Param("memberId") String memberId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM chat_room WHERE member_id = :memberId", nativeQuery = true)
+    void deleteAllByMemberId(String memberId);
 }

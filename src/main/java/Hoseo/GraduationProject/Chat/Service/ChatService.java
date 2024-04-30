@@ -57,9 +57,16 @@ public class ChatService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteChatRoom(Member member, Long chatRoomId){
         //채팅방 삭제
-        chatBotRepository.deleteByChatBotId(chatRoomId);
+        chatBotRepository.deleteByChatRoomId(chatRoomId);
         userChatRepository.deleteByChatRoomId(chatRoomId);
         chatRoomRepository.deleteByIdAndMemberId(chatRoomId, member.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAllChatRoom(Member member){
+        chatBotRepository.deleteByMemberId(member.getId());
+        userChatRepository.deleteByMemberId(member.getId());
+        chatRoomRepository.deleteAllByMemberId(member.getId());
     }
 
     @Transactional(rollbackFor = Exception.class)
