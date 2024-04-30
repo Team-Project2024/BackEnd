@@ -42,6 +42,12 @@ public class GraduationRequirements {
     @Column(name = "graduation_credits")
     private Long graduationCredits;
 
+    @Column(name = "volunteer")
+    private Long volunteer;
+
+    @Column(name = "chapel")
+    private Long chapel;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "major_id")
@@ -51,7 +57,7 @@ public class GraduationRequirements {
     GraduationRequirements(Long id, String year, Long characterCulture,
                            Long basicLiberalArts, Long generalLiberalArts, Long majorCommon,
                            Long majorAdvanced, Long freeChoice, Long graduationCredits,
-                           Long grade, Major major) {
+                           Long volunteer, Long chapel, Major major) {
         this.id = id;
         this.year = year;
         this.characterCulture = characterCulture;
@@ -61,6 +67,8 @@ public class GraduationRequirements {
         this.majorAdvanced = majorAdvanced;
         this.freeChoice = freeChoice;
         this.graduationCredits = graduationCredits;
+        this.volunteer = volunteer;
+        this.chapel = chapel;
         this.major = major;
     }
 }

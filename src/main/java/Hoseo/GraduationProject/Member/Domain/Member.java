@@ -56,9 +56,6 @@ public class Member {
     @JoinColumn(name = "major_id")
     private Major major;
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<UserChat> userChats = new ArrayList<>();
-
 //    @OneToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "id")
 //    private ConfirmCompletion confirmCompletion;

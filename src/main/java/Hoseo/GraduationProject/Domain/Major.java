@@ -20,10 +20,6 @@ public class Major {
     private Long majorId;
 
     @NotBlank
-    @Column(name = "college")
-    private String college;
-
-    @NotBlank
     @Column(name = "department")
     private String department;
 
@@ -38,10 +34,8 @@ public class Major {
 //    private List<GraduationRequirements> graduationRequirements;
 
     @Builder
-    Major(Long majorId, String college,
-          String department, String track) {
+    Major(Long majorId, String department, String track) {
         this.majorId = majorId;
-        this.college = college;
         this.department = department;
         this.track = track;
     }

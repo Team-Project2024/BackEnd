@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 public class ConfirmCompletion {
 
     @Id
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
 //    @OneToOne(fetch = FetchType.LAZY)
@@ -42,9 +43,16 @@ public class ConfirmCompletion {
     @Column(name = "graduation_credits")
     private Long graduationCredits;
 
+    @Column(name = "volunteer")
+    private Long volunteer;
+
+    @Column(name = "chapel")
+    private Long chapel;
+
     @Builder
     ConfirmCompletion(Long id, Member member, Long characterCulture, Long basicLiberalArts,
-    Long generalLiberalArts, Long majorCommon, Long majorAdvanced, Long freeChoice, Long graduationCredits){
+    Long generalLiberalArts, Long majorCommon, Long majorAdvanced, Long freeChoice,
+                      Long volunteer, Long chapel,Long graduationCredits){
         this.id = id;
         this.member = member;
         this.characterCulture = characterCulture;
@@ -53,6 +61,8 @@ public class ConfirmCompletion {
         this.majorCommon = majorCommon;
         this.majorAdvanced = majorAdvanced;
         this.freeChoice = freeChoice;
+        this.volunteer = volunteer;
+        this.chapel = chapel;
         this.graduationCredits = graduationCredits;
     }
 }
