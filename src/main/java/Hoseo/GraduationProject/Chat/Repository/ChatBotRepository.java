@@ -10,6 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ChatBotRepository extends JpaRepository<ChatBot, Long> {
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM chat_bot WHERE user_chat_id IN (SELECT id FROM user_chat WHERE member_id = :memberId)", nativeQuery = true)
-    void deleteChatBotByMemberId(@Param("memberId") String memberId);
+    @Query(value = "DELETE FROM chat_bot WHERE user_chat_id IN (SELECT id FROM user_chat WHERE room_id = :chatRoomId)", nativeQuery = true)
+    void deleteByChatBotId(@Param("chatRoomId") Long chatRoomId);
 }

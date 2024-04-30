@@ -48,8 +48,11 @@ public class DialogFlowController {
         return ResponseEntity.status(HttpStatus.OK).body(chatService.getChatRoomList(member.getMember()));
     }
 
-    @DeleteMapping
-    public
+    @DeleteMapping("/chatRoom")
+    public ResponseEntity<Void> deleteChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam Long chatRoomId) {
+        chatService.deleteChatRoom(member.getMember(), chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     /**
     * 채팅 메서드

@@ -38,6 +38,7 @@ public class ChatService {
         return chatRoom.getId();
     }
 
+    @Transactional(readOnly = true)
     public List<ResponseChatRoomDTO> getChatRoomList(Member member){
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberId(member.getId());
         List<ResponseChatRoomDTO> responseChatRoomDTOList = new ArrayList<>();
@@ -53,7 +54,15 @@ public class ChatService {
         return responseChatRoomDTOList;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteChatRoom(Member member, Long chatRoomId){
+        //채팅방 삭제
+        chatBotRepository.deleteByChatBotId(chatRoomId);
+        userChatRepository.deleteByChatRoomId(chatRoomId);
+        chatRoomRepository.deleteByIdAndMemberId(chatRoomId, member.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public String testCreateChat(CustomUserDetails member, String message, Long chatRoomId){
         String answer = "Chat Answer";
         ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).get();
@@ -79,6 +88,7 @@ public class ChatService {
         return answer;
     }
 
+    @Transactional(readOnly = true)
     public ResponseChatDTO getChat(Long chatRoomId){
         List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
 
