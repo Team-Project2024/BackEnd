@@ -2,9 +2,11 @@ package Hoseo.GraduationProject.Chat.Service;
 
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
+import Hoseo.GraduationProject.Chat.ExceptionType.ChatRoomExceptionType;
 import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
 import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,12 @@ public class ChatRoomService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .member(member)
                 .build();
-        chatRoomRepository.save(chatRoom);
+
+        try{
+            chatRoomRepository.save(chatRoom);
+        }catch(Exception e){
+            throw new BusinessLogicException(ChatRoomExceptionType.SAVE_CHATROOM_ERROR);
+        }
 
         return chatRoom.getId();
     }

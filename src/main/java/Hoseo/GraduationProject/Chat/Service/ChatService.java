@@ -7,6 +7,7 @@ import Hoseo.GraduationProject.Chat.Domain.ChatBot;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
 import Hoseo.GraduationProject.Chat.Domain.UserChat;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
+import Hoseo.GraduationProject.Chat.ExceptionType.ChatRoomExceptionType;
 import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
 import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
@@ -30,7 +31,8 @@ public class ChatService {
     @Transactional(rollbackFor = Exception.class)
     public String testCreateChat(CustomUserDetails member, String message, Long chatRoomId){
         String answer = "Chat Answer";
-        ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).get();
+        ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
         chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
 
         UserChat userChat = UserChat.builder()

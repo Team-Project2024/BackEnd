@@ -24,7 +24,11 @@ public class ChatRoomController {
 
     @GetMapping("/chat-room")
     public ResponseEntity<List<ResponseChatRoomDTO>> getChatRoomList(@AuthenticationPrincipal CustomUserDetails member) {
-        return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.getChatRoomList(member.getMember()));
+        List<ResponseChatRoomDTO> chatRoomList = chatRoomService.getChatRoomList(member.getMember());
+        if(chatRoomList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(chatRoomList);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomList);
     }
 
     @DeleteMapping("/chat-room")
