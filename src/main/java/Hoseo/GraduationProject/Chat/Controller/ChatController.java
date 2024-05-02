@@ -2,7 +2,6 @@ package Hoseo.GraduationProject.Chat.Controller;
 
 import Hoseo.GraduationProject.Chat.DTO.DjangoTestDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
-import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatExceptionType;
 import Hoseo.GraduationProject.Chat.Service.ChatService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
@@ -21,13 +20,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
-public class DialogFlowController {
+public class ChatController {
 
     @Value("${DjangoURL}")
     private String djangoUrl;
@@ -35,30 +33,6 @@ public class DialogFlowController {
     private static final JacksonFactory jacksonFactory = JacksonFactory.getDefaultInstance();
 
     private final ChatService chatService;
-
-    // 채팅방 삭제하면서 유저 채팅과 챗봇 채팅 삭제
-
-    @PostMapping("/chatRoom")
-    public ResponseEntity<Long> createChatRoom(@AuthenticationPrincipal CustomUserDetails member) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatService.createChatRoom(member.getMember()));
-    }
-
-    @GetMapping("/chatRoom")
-    public ResponseEntity<List<ResponseChatRoomDTO>> getChatRoomList(@AuthenticationPrincipal CustomUserDetails member) {
-        return ResponseEntity.status(HttpStatus.OK).body(chatService.getChatRoomList(member.getMember()));
-    }
-
-    @DeleteMapping("/chatRoom")
-    public ResponseEntity<Void> deleteChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam Long chatRoomId) {
-        chatService.deleteChatRoom(member.getMember(), chatRoomId);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @DeleteMapping("/AllChatRoom")
-    public ResponseEntity<Void> deleteAllChatRoom(@AuthenticationPrincipal CustomUserDetails member) {
-        chatService.deleteAllChatRoom(member.getMember());
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 
     /**
     * 채팅 메서드
