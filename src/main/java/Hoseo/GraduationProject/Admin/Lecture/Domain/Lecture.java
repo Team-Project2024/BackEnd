@@ -69,7 +69,7 @@ public class Lecture {
     private boolean aiSw;
 
     @Column(name = "course_evaluation")
-    private String course_evaluation;
+    private Long course_evaluation;
 
     //교수 정보
 //    @ManyToOne(fetch = FetchType.LAZY)
@@ -84,7 +84,7 @@ public class Lecture {
     Lecture(Long id, String lectureName, String classification, String room,
             Long credit, Long division, Long grade, String lectureTime, String classMethod,
             String testType, Long teamwork, Long entrepreneurship, Long creativeThinking, Long harnessingResource,
-            boolean teamPlay, String gradeMethod, String testMethod, boolean aiSw, String course_evaluation, Member member) {
+            boolean teamPlay, String gradeMethod, String testMethod, boolean aiSw, Long course_evaluation, Member member) {
         this.id = id;
         this.lectureName = lectureName;
         this.classification = classification;
