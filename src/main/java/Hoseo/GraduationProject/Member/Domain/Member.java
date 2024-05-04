@@ -35,19 +35,15 @@ public class Member {
     @Column(name = "role")
     private String role;
 
-    @NotBlank
     @Column(name="teamwork")
     private Long teamwork;
 
-    @NotBlank
     @Column(name="entrepreneurship")
     private Long entrepreneurship;
 
-    @NotBlank
     @Column(name="creative_thinking")
     private Long creativeThinking;
 
-    @NotBlank
     @Column(name="harnessing_resource")
     private Long harnessingResource;
 

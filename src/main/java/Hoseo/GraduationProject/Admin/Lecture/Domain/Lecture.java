@@ -80,6 +80,10 @@ public class Lecture {
 //    @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
 //    private List<CourseDetails> courseDetails = new ArrayList<>();
 
+    public void deleteLecture(){
+        this.room = null;
+    }
+
     @Builder
     Lecture(Long id, String lectureName, String classification, String room,
             Long credit, Long division, Long grade, String lectureTime, String classMethod,
