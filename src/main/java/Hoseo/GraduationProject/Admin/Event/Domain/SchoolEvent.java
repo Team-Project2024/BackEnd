@@ -1,4 +1,4 @@
-package Hoseo.GraduationProject.Domain;
+package Hoseo.GraduationProject.Admin.Event.Domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -30,6 +30,10 @@ public class SchoolEvent {
 
     @Column(name = "modified")
     private boolean modified;
+
+    public void cancleEvent(){
+        this.isCancled = true;
+    }
 
     @Builder
     SchoolEvent(Long id, String eventName, String eventPeriod

@@ -1,6 +1,6 @@
 package Hoseo.GraduationProject.Member.Domain;
 
-import Hoseo.GraduationProject.Domain.Major;
+import Hoseo.GraduationProject.Admin.Major.Domain.Major;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

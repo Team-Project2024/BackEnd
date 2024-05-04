@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.Domain;
 
+import Hoseo.GraduationProject.Admin.Lecture.Domain.Lecture;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;

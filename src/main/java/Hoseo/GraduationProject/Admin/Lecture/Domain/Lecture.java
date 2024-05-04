@@ -1,4 +1,4 @@
-package Hoseo.GraduationProject.Domain;
+package Hoseo.GraduationProject.Admin.Lecture.Domain;
 
 import Hoseo.GraduationProject.Member.Domain.Member;
 import jakarta.persistence.*;
