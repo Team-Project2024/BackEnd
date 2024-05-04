@@ -1,5 +1,6 @@
-package Hoseo.GraduationProject.Domain;
+package Hoseo.GraduationProject.Admin.GraduationRequirements.Domain;
 
+import Hoseo.GraduationProject.Admin.Major.Domain.Major;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

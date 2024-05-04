@@ -1,4 +1,4 @@
-package Hoseo.GraduationProject.Domain;
+package Hoseo.GraduationProject.Admin.Major.Domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;

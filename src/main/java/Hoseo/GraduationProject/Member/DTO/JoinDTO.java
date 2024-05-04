@@ -1,6 +1,6 @@
 package Hoseo.GraduationProject.Member.DTO;
 
-import Hoseo.GraduationProject.Domain.Major;
+import Hoseo.GraduationProject.Admin.Major.Domain.Major;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
