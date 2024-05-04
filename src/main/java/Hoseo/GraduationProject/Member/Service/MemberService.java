@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.Member.Service;
 
+import Hoseo.GraduationProject.Admin.Major.Service.MajorService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.DTO.*;
 import Hoseo.GraduationProject.Member.Domain.Member;
@@ -20,6 +21,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisRepository redisRepository;
+    private final MajorService majorService;
 
     public void joinProcess(JoinDTO joinDTO){
         // 학번이 같은 회원이 있는지 확인
@@ -40,9 +42,13 @@ public class MemberService {
                         .password(bCryptPasswordEncoder.encode(joinDTO.getPassword()))
                         .name(joinDTO.getName())
                         .email(joinDTO.getEmail())
-                        .major(joinDTO.getMajor())
                         // ROLE_ + 권한으로 가입
                         .role("ROLE_"+String.valueOf(joinDTO.getRole()))
+                        .teamwork(0L)
+                        .entrepreneurship(0L)
+                        .creativeThinking(0L)
+                        .harnessingResource(0L)
+                        .major(majorService.getMajor(joinDTO.getMajorId()))
                         .build();
                 memberRepository.save(newMember);
             }

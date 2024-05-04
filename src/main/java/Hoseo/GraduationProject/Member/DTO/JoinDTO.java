@@ -1,10 +1,6 @@
 package Hoseo.GraduationProject.Member.DTO;
 
-import Hoseo.GraduationProject.Admin.Major.Domain.Major;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +28,6 @@ public class JoinDTO {
     @NotNull
     private Role role;
 
-    @NotBlank
-    private Major major;
+    @Min(1)
+    private Long majorId;
 }
