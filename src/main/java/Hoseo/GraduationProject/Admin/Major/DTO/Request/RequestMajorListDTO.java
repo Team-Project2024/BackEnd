@@ -1,4 +1,4 @@
-package Hoseo.GraduationProject.Admin.Major.DTO;
+package Hoseo.GraduationProject.Admin.Major.DTO.Request;
 
 import lombok.Getter;
 import lombok.Setter;

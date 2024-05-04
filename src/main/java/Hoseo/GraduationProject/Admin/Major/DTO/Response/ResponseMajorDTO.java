@@ -1,11 +1,12 @@
-package Hoseo.GraduationProject.Admin.Major.DTO;
+package Hoseo.GraduationProject.Admin.Major.DTO.Response;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RequestMajorDTO {
+public class ResponseMajorDTO {
+    private Long majorId;
     private String department;
     private String track;
 }

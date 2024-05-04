@@ -1,7 +1,8 @@
 package Hoseo.GraduationProject.Admin.Major.Service;
 
-import Hoseo.GraduationProject.Admin.Major.DTO.RequestMajorDTO;
-import Hoseo.GraduationProject.Admin.Major.DTO.RequestMajorListDTO;
+import Hoseo.GraduationProject.Admin.Major.DTO.Request.RequestMajorDTO;
+import Hoseo.GraduationProject.Admin.Major.DTO.Request.RequestMajorListDTO;
+import Hoseo.GraduationProject.Admin.Major.DTO.Response.ResponseMajorDTO;
 import Hoseo.GraduationProject.Admin.Major.Domain.Major;
 import Hoseo.GraduationProject.Admin.Major.ExceptionType.MajorExceptionType;
 import Hoseo.GraduationProject.Admin.Major.Repository.MajorRepository;
@@ -38,5 +39,20 @@ public class MajorService {
     public Major getMajor(Long majorId){
         return majorRepository.findById(majorId).orElseThrow(
                 () -> new BusinessLogicException(MajorExceptionType.MAJOR_NOT_FOUND));
+    }
+
+    public List<ResponseMajorDTO> getMajorList(){
+        List<Major> majors = majorRepository.findAll();
+        List<ResponseMajorDTO> responseMajorDTOS = new ArrayList<>();
+        for(Major major: majors){
+            ResponseMajorDTO responseMajorDTO = new ResponseMajorDTO();
+            responseMajorDTO.setMajorId(major.getMajorId());
+            responseMajorDTO.setDepartment(major.getDepartment());
+            responseMajorDTO.setTrack(major.getTrack());
+
+            responseMajorDTOS.add(responseMajorDTO);
+        }
+
+        return responseMajorDTOS;
     }
 }
