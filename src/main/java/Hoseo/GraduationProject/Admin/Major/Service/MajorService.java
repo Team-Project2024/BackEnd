@@ -3,7 +3,9 @@ package Hoseo.GraduationProject.Admin.Major.Service;
 import Hoseo.GraduationProject.Admin.Major.DTO.RequestMajorDTO;
 import Hoseo.GraduationProject.Admin.Major.DTO.RequestMajorListDTO;
 import Hoseo.GraduationProject.Admin.Major.Domain.Major;
+import Hoseo.GraduationProject.Admin.Major.ExceptionType.MajorExceptionType;
 import Hoseo.GraduationProject.Admin.Major.Repository.MajorRepository;
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,10 @@ public class MajorService {
                     .build();
             majors.add(major);
         }
-        majorRepository.saveAll(majors);
+        try{
+            majorRepository.saveAll(majors);
+        } catch (Exception e) {
+            throw new BusinessLogicException(MajorExceptionType.MAJOR_SAVE_ERROR);
+        }
     }
 }
