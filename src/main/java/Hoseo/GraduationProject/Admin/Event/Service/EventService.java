@@ -10,6 +10,7 @@ import Hoseo.GraduationProject.Admin.Event.Repository.SchoolEventRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Objects;
 public class EventService {
     private final SchoolEventRepository schoolEventRepository;
 
+    @Transactional(readOnly = true)
     public List<ResponseEventInfoDTO> getAllEvents() {
         List<SchoolEvent> schoolEvents = schoolEventRepository.findAll();
         List<ResponseEventInfoDTO> responseEventInfoDTOList = new ArrayList<>();
@@ -36,6 +38,7 @@ public class EventService {
         return responseEventInfoDTOList;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void createEvent(RequestEventListDTO requestEventListDTO){
         List<SchoolEvent> schoolEvents = new ArrayList<>();
         for(RequestEventDTO requestEventDTO : requestEventListDTO.getRequestEventList()){
@@ -55,37 +58,41 @@ public class EventService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void cancleEvent(Long eventId){
         SchoolEvent schoolEvent = schoolEventRepository.findById(eventId).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
         schoolEvent.cancleEvent();
-        schoolEventRepository.save(schoolEvent);
+
+        try{
+            schoolEventRepository.save(schoolEvent);
+        } catch (Exception e){
+            throw new BusinessLogicException(EventExceptionType.EVENT_SAVE_ERROR);
+        }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateEvent(RequestEventUpdateDTO requestEventUpdateDTO){
         SchoolEvent schoolEvent = schoolEventRepository.findById(requestEventUpdateDTO.getId()).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
+
+        SchoolEvent newSchoolEvent = SchoolEvent.builder()
+                .id(requestEventUpdateDTO.getId())
+                .eventName(requestEventUpdateDTO.getEventName())
+                .eventPeriod(requestEventUpdateDTO.getEventPeriod())
+                .description(requestEventUpdateDTO.getDescription())
+                .isCancled(schoolEvent.isCancled())
+                .build();
+
         //날짜 변경 여부 확인
-        SchoolEvent newSchoolEvent;
         if(!Objects.equals(schoolEvent.getEventPeriod(), requestEventUpdateDTO.getEventPeriod())){
-            newSchoolEvent = SchoolEvent.builder()
-                    .id(requestEventUpdateDTO.getId())
-                    .eventName(requestEventUpdateDTO.getEventName())
-                    .eventPeriod(requestEventUpdateDTO.getEventPeriod())
-                    .description(requestEventUpdateDTO.getDescription())
-                    .modified(true)
-                    .isCancled(schoolEvent.isCancled())
-                    .build();
-        } else{
-            newSchoolEvent = SchoolEvent.builder()
-                    .id(requestEventUpdateDTO.getId())
-                    .eventName(requestEventUpdateDTO.getEventName())
-                    .eventPeriod(requestEventUpdateDTO.getEventPeriod())
-                    .description(requestEventUpdateDTO.getDescription())
-                    .modified(false)
-                    .isCancled(schoolEvent.isCancled())
-                    .build();
+            newSchoolEvent.modifiedEvent();
         }
-        schoolEventRepository.save(newSchoolEvent);
+
+        try{
+            schoolEventRepository.save(newSchoolEvent);
+        } catch (Exception e){
+            throw new BusinessLogicException(EventExceptionType.EVENT_SAVE_ERROR);
+        }
     }
 }

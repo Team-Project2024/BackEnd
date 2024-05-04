@@ -35,6 +35,10 @@ public class SchoolEvent {
         this.isCancled = true;
     }
 
+    public void modifiedEvent(){
+        this.modified = true;
+    }
+
     @Builder
     SchoolEvent(Long id, String eventName, String eventPeriod
     , String description, boolean isCancled, boolean modified){

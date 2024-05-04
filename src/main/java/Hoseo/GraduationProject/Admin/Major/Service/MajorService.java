@@ -8,6 +8,7 @@ import Hoseo.GraduationProject.Admin.Major.Repository.MajorRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class MajorService {
     private final MajorRepository majorRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public void createMajor(RequestMajorListDTO requestMajorListDTO){
         List<Major> majors = new ArrayList<>();
         for(RequestMajorDTO requestMajorDTO: requestMajorListDTO.getRequestMajorList()){
