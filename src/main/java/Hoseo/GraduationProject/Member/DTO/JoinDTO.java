@@ -28,6 +28,6 @@ public class JoinDTO {
     @NotNull
     private Role role;
 
-    @Min(1)
+    @NotNull
     private Long majorId;
 }

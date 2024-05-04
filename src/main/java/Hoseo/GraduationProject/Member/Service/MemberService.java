@@ -3,6 +3,7 @@ package Hoseo.GraduationProject.Member.Service;
 import Hoseo.GraduationProject.Admin.Major.Service.MajorService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.DTO.*;
+import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorDTO;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -81,5 +84,24 @@ public class MemberService {
                 throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
             }
         }
+    }
+
+    public Member getMemberById(String memberId){
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
+    }
+
+    public List<ResponseProfessorDTO> getProfessorList(){
+        List<Member> members = memberRepository.findByRoleProfessor();
+        List<ResponseProfessorDTO> responseProfessorDTOS = new ArrayList<>();
+        for(Member member: members){
+            ResponseProfessorDTO responseProfessorDTO = new ResponseProfessorDTO();
+            responseProfessorDTO.setId(member.getId());
+            responseProfessorDTO.setName(member.getName());
+            responseProfessorDTO.setDepartment(member.getMajor().getDepartment());
+
+            responseProfessorDTOS.add(responseProfessorDTO);
+        }
+        return responseProfessorDTOS;
     }
 }
