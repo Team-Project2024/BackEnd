@@ -34,4 +34,9 @@ public class MajorService {
             throw new BusinessLogicException(MajorExceptionType.MAJOR_SAVE_ERROR);
         }
     }
+
+    public Major getMajor(Long majorId){
+        return majorRepository.findById(majorId).orElseThrow(
+                () -> new BusinessLogicException(MajorExceptionType.MAJOR_NOT_FOUND));
+    }
 }
