@@ -25,14 +25,14 @@ public class SchoolEvent {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "is_cancled")
-    private boolean isCancled;
+    @Column(name = "is_canceled")
+    private boolean isCanceled;
 
     @Column(name = "modified")
     private boolean modified;
 
-    public void cancleEvent(){
-        this.isCancled = true;
+    public void cancelEvent(){
+        this.isCanceled = true;
     }
 
     public void modifiedEvent(){
@@ -41,12 +41,12 @@ public class SchoolEvent {
 
     @Builder
     SchoolEvent(Long id, String eventName, String eventPeriod
-    , String description, boolean isCancled, boolean modified){
+    , String description, boolean isCanceled, boolean modified){
         this.id = id;
         this.eventName = eventName;
         this.eventPeriod = eventPeriod;
         this.description = description;
-        this.isCancled = isCancled;
+        this.isCanceled = isCanceled;
         this.modified = modified;
     }
 

@@ -32,7 +32,7 @@ public class ChatRoomController {
     }
 
     @DeleteMapping("/chat-room")
-    public ResponseEntity<Void> deleteChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam Long chatRoomId) {
+    public ResponseEntity<Void> deleteChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam(required = false) Long chatRoomId) {
         chatRoomService.deleteChatRoom(member.getMember(), chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

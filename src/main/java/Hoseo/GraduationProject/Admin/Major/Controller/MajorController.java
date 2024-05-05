@@ -3,6 +3,7 @@ package Hoseo.GraduationProject.Admin.Major.Controller;
 import Hoseo.GraduationProject.Admin.Major.DTO.Request.RequestMajorListDTO;
 import Hoseo.GraduationProject.Admin.Major.DTO.Response.ResponseMajorDTO;
 import Hoseo.GraduationProject.Admin.Major.Service.MajorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class MajorController {
 
     // 전공 추가 API
     @PostMapping
-    public ResponseEntity<Void> createMajor(@RequestBody RequestMajorListDTO requestMajorListDTO){
+    public ResponseEntity<Void> createMajor(@Valid @RequestBody RequestMajorListDTO requestMajorListDTO){
         majorService.createMajor(requestMajorListDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

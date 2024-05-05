@@ -36,11 +36,13 @@ public class MajorService {
         }
     }
 
+    //major ID를 받아서 Major 엔티티를 반환하는 메서드
     public Major getMajor(Long majorId){
         return majorRepository.findById(majorId).orElseThrow(
                 () -> new BusinessLogicException(MajorExceptionType.MAJOR_NOT_FOUND));
     }
 
+    //전체 major를 반환하는 메서드 major의 id, 학과, 트랙을 반환
     public List<ResponseMajorDTO> getMajorList(){
         List<Major> majors = majorRepository.findAll();
         List<ResponseMajorDTO> responseMajorDTOS = new ArrayList<>();

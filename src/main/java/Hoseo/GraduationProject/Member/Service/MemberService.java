@@ -86,11 +86,13 @@ public class MemberService {
         }
     }
 
+    // memberId로 멤버를 찾아서 반환하는 메서드
     public Member getMemberById(String memberId){
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
     }
 
+    // Role이 ROLE_PROFESSOR인 멤버들을 반환하는 메서드
     public List<ResponseProfessorDTO> getProfessorList(){
         List<Member> members = memberRepository.findByRoleProfessor();
         List<ResponseProfessorDTO> responseProfessorDTOS = new ArrayList<>();

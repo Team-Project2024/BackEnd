@@ -31,7 +31,7 @@ public class EventService {
             responseEventInfoDTO.setEventName(schoolEvent.getEventName());
             responseEventInfoDTO.setEventPeriod(schoolEvent.getEventPeriod());
             responseEventInfoDTO.setDescription(schoolEvent.getDescription());
-            responseEventInfoDTO.setCancled(schoolEvent.isCancled());
+            responseEventInfoDTO.setCancled(schoolEvent.isCanceled());
             responseEventInfoDTO.setModified(schoolEvent.isModified());
             responseEventInfoDTOList.add(responseEventInfoDTO);
         }
@@ -47,7 +47,7 @@ public class EventService {
                     .eventPeriod(requestEventDTO.getEventPeriod())
                     .description(requestEventDTO.getDescription())
                     .modified(false)
-                    .isCancled(false)
+                    .isCanceled(false)
                     .build();
             schoolEvents.add(schoolEvent);
         }
@@ -62,7 +62,7 @@ public class EventService {
     public void cancleEvent(Long eventId){
         SchoolEvent schoolEvent = schoolEventRepository.findById(eventId).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
-        schoolEvent.cancleEvent();
+        schoolEvent.cancelEvent();
 
         try{
             schoolEventRepository.save(schoolEvent);
@@ -81,7 +81,7 @@ public class EventService {
                 .eventName(requestEventUpdateDTO.getEventName())
                 .eventPeriod(requestEventUpdateDTO.getEventPeriod())
                 .description(requestEventUpdateDTO.getDescription())
-                .isCancled(schoolEvent.isCancled())
+                .isCanceled(schoolEvent.isCanceled())
                 .build();
 
         //날짜 변경 여부 확인

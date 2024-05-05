@@ -2,6 +2,7 @@ package Hoseo.GraduationProject.Admin.GraduationRequirements.Controller;
 
 import Hoseo.GraduationProject.Admin.GraduationRequirements.DTO.RequestGRListDTO;
 import Hoseo.GraduationProject.Admin.GraduationRequirements.Service.GRService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class GRController {
     private final GRService grService;
 
     @PostMapping
-    public ResponseEntity<Void> createGR(@RequestBody RequestGRListDTO requestGRListDTO){
+    public ResponseEntity<Void> createGR(@Valid @RequestBody RequestGRListDTO requestGRListDTO){
         grService.createGR(requestGRListDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -38,7 +38,9 @@ public class ChatController {
     * 채팅 메서드
     * */
     @PostMapping("/test")
-    public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member, @RequestParam String message, @RequestParam Long chatRoomId){
+    public ResponseEntity<String> testCreateChat(@AuthenticationPrincipal CustomUserDetails member,
+                                                 @RequestParam(required = false) String message,
+                                                 @RequestParam(required = false) Long chatRoomId){
         /**
          * 메시지를 받아서 dialogflow에 전송
          * dialogflow로부터 intent, entity를 리턴받음
@@ -69,7 +71,7 @@ public class ChatController {
      * 채팅 내역을 가져오는 메서드
      * */
     @GetMapping
-    public ResponseEntity<ResponseChatDTO> getChat(@RequestParam Long chatRoomId){
+    public ResponseEntity<ResponseChatDTO> getChat(@RequestParam(required = false) Long chatRoomId){
         ResponseChatDTO responseChatDTO = chatService.getChat(chatRoomId);
         if(responseChatDTO.getUserChat().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseChatDTO);

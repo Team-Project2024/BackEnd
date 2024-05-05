@@ -3,13 +3,17 @@ package Hoseo.GraduationProject.Admin.Event.Controller;
 import Hoseo.GraduationProject.Admin.Event.DTO.Request.RequestEventListDTO;
 import Hoseo.GraduationProject.Admin.Event.DTO.Request.RequestEventUpdateDTO;
 import Hoseo.GraduationProject.Admin.Event.DTO.Response.ResponseEventInfoDTO;
+import Hoseo.GraduationProject.Admin.Event.ExceptionType.EventExceptionType;
 import Hoseo.GraduationProject.Admin.Event.Service.EventService;
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,29 +28,30 @@ public class EventController {
     @GetMapping
     public ResponseEntity<List<ResponseEventInfoDTO>> getAllEvents() {
         List<ResponseEventInfoDTO> responseEventInfoDTOS = eventService.getAllEvents();
-        if(responseEventInfoDTOS.isEmpty()){
+        if(responseEventInfoDTOS.isEmpty())
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseEventInfoDTOS);
-        }
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEvents());
     }
 
     // 이벤트 여러개 생성
     @PostMapping
-    public ResponseEntity<Void> createEvent(@RequestBody RequestEventListDTO requestEventListDTO){
+    public ResponseEntity<Void> createEvent(@Valid @RequestBody RequestEventListDTO requestEventListDTO){
         eventService.createEvent(requestEventListDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 이벤트 취소 API
-    @PutMapping("/cancle")
-    public ResponseEntity<Void> cancleEvent(@RequestParam Long eventId){
+    @PutMapping("/cancel")
+    public ResponseEntity<Void> cancelEvent(@RequestParam(required = false) Long eventId){
+        if(Objects.isNull(eventId))
+            throw new BusinessLogicException(EventExceptionType.INVALID_INPUT_VALUE);
         eventService.cancleEvent(eventId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 이벤트 수정 API
     @PutMapping("/update")
-    public ResponseEntity<Void> updateEvent(@RequestBody RequestEventUpdateDTO requestEventUpdateDTO){
+    public ResponseEntity<Void> updateEvent(@Valid @RequestBody RequestEventUpdateDTO requestEventUpdateDTO){
         eventService.updateEvent(requestEventUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
