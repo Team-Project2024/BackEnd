@@ -29,6 +29,7 @@ public class GRService {
                     .characterCulture(requestGRDTO.getCharacterCulture())
                     .basicLiberalArts(requestGRDTO.getBasicLiberalArts())
                     .generalLiberalArts(requestGRDTO.getGeneralLiberalArts())
+                    .msc(requestGRDTO.getMsc())
                     .majorCommon(requestGRDTO.getMajorCommon())
                     .majorAdvanced(requestGRDTO.getMajorAdvanced())
                     .freeChoice(requestGRDTO.getFreeChoice())

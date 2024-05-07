@@ -24,6 +24,9 @@ public class RequestGRDTO {
     @NotNull
     private Long generalLiberalArts;
 
+    @NotNull
+    private Long msc;
+
     // 전공공통
     @NotNull
     private Long majorCommon;

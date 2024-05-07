@@ -31,6 +31,9 @@ public class GraduationRequirements {
     @Column(name = "general_liberal_arts")
     private Long generalLiberalArts;
 
+    @Column(name = "msc")
+    private Long msc;
+
     @Column(name = "major_common")
     private Long majorCommon;
 
@@ -56,8 +59,8 @@ public class GraduationRequirements {
 
     @Builder
     GraduationRequirements(Long id, String year, Long characterCulture,
-                           Long basicLiberalArts, Long generalLiberalArts, Long majorCommon,
-                           Long majorAdvanced, Long freeChoice, Long graduationCredits,
+                           Long basicLiberalArts, Long generalLiberalArts, Long msc,
+                           Long majorCommon, Long majorAdvanced, Long freeChoice, Long graduationCredits,
                            Long volunteer, Long chapel, Major major) {
         this.id = id;
         this.year = year;
