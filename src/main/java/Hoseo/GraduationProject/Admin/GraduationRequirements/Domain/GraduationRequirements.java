@@ -67,6 +67,7 @@ public class GraduationRequirements {
         this.characterCulture = characterCulture;
         this.basicLiberalArts = basicLiberalArts;
         this.generalLiberalArts = generalLiberalArts;
+        this.msc = msc;
         this.majorCommon = majorCommon;
         this.majorAdvanced = majorAdvanced;
         this.freeChoice = freeChoice;
