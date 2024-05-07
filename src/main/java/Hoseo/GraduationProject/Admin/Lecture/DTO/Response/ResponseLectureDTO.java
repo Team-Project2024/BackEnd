@@ -49,9 +49,6 @@ public class ResponseLectureDTO {
     //성적산출방식
     private String gradeMethod;
 
-    //시험방식
-    private String testMethod;
-
     //AISW디그리
     private boolean aiSw;
 

@@ -63,10 +63,6 @@ public class RequestLectureDTO {
     @NotBlank
     private String gradeMethod;
 
-    //시험방식
-    @NotBlank
-    private String testMethod;
-
     //AISW디그리
     @NotNull
     private boolean aiSw;

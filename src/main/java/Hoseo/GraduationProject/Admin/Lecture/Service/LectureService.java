@@ -24,7 +24,7 @@ public class LectureService {
 
     @Transactional(readOnly = true)
     public List<ResponseLectureDTO> getLectureList(){
-        List<Lecture> lectureList = lectureRepository.findAll();
+        List<Lecture> lectureList = lectureRepository.findAllWithMemberAndMajor();
 
         List<ResponseLectureDTO> responseLectureListDTOList = new ArrayList<>();
         for (Lecture lecture : lectureList) {
@@ -45,7 +45,6 @@ public class LectureService {
             responseLectureDTO.setHarnessingResource(lecture.getHarnessingResource());
             responseLectureDTO.setTeamPlay(lecture.isTeamPlay());
             responseLectureDTO.setGradeMethod(lecture.getGradeMethod());
-            responseLectureDTO.setTestMethod(lecture.getTestMethod());
             responseLectureDTO.setAiSw(lecture.isAiSw());
             responseLectureDTO.setCourse_evaluation(lecture.getCourse_evaluation());
             responseLectureDTO.setMemberId(lecture.getMember().getId());
@@ -82,7 +81,6 @@ public class LectureService {
                         .harnessingResource(requestLectureDTO.getHarnessingResource())
                         .teamPlay(requestLectureDTO.isTeamPlay())
                         .gradeMethod(requestLectureDTO.getGradeMethod())
-                        .testMethod(requestLectureDTO.getTestMethod())
                         .aiSw(requestLectureDTO.isAiSw())
                         .course_evaluation(requestLectureDTO.getCourse_evaluation())
                         .member(member)

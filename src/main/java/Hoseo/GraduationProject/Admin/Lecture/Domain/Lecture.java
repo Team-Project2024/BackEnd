@@ -62,9 +62,6 @@ public class Lecture {
     @Column(name = "grade_method")
     private String gradeMethod;
 
-    @Column(name = "test_method")
-    private String testMethod;
-
     @Column(name = "ai_sw")
     private boolean aiSw;
 
@@ -88,7 +85,7 @@ public class Lecture {
     Lecture(Long id, String lectureName, String classification, String room,
             Long credit, Long division, Long grade, String lectureTime, String classMethod,
             String testType, Long teamwork, Long entrepreneurship, Long creativeThinking, Long harnessingResource,
-            boolean teamPlay, String gradeMethod, String testMethod, boolean aiSw, Long course_evaluation, Member member) {
+            boolean teamPlay, String gradeMethod, boolean aiSw, Long course_evaluation, Member member) {
         this.id = id;
         this.lectureName = lectureName;
         this.classification = classification;
@@ -105,7 +102,6 @@ public class Lecture {
         this.harnessingResource = harnessingResource;
         this.teamPlay = teamPlay;
         this.gradeMethod = gradeMethod;
-        this.testMethod = testMethod;
         this.aiSw = aiSw;
         this.course_evaluation = course_evaluation;
         this.member = member;
