@@ -31,6 +31,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' //jwt 설정
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' //jwt 설정
@@ -47,6 +49,7 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.6.2'
 	implementation 'com.google.apis:google-api-services-dialogflow:v2beta1-rev15-1.23.0'
 	implementation group: 'com.google.cloud', name: 'google-cloud-dialogflow', version: '4.43.0'
+	implementation 'com.google.cloud:google-cloud-dialogflow:4.18.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' //Django API 요청
 }
