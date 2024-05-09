@@ -42,8 +42,12 @@ public class ChatService {
     @Value("${ProjectId}")
     private String projectId;
 
+    @Value("${CredentialFileURL}")
+    private String CredentialFileURL;
+
     private static final String LOCATION = "global";
-    private static final String LANGUAGECODE = "ko";
+    private static final String LANGUAGE_CODE = "ko";
+    private static final String GOOGLE_SCOPED_URL = "https://www.googleapis.com/auth/cloud-platform";
 
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
@@ -85,10 +89,11 @@ public class ChatService {
         return responseChatDTO;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public String detectIntentWithLocation(String user_chat,Long roomId, Member member) throws IOException, ApiException {
         //Google 사용자 권한 인증
-        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("/Users/kk/Desktop/졸업작품/BackEnd/src/main/resources/credential_file.json"))
-                .createScoped("https://www.googleapis.com/auth/cloud-platform");
+        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/" + CredentialFileURL))
+                .createScoped(GOOGLE_SCOPED_URL);
 
         SessionsSettings sessionsSettings =
                 SessionsSettings.newBuilder()
@@ -100,16 +105,19 @@ public class ChatService {
         SessionName session = SessionName.ofProjectLocationSessionName(projectId, LOCATION, sessionId);
 
         TextInput.Builder textInput =
-                TextInput.newBuilder().setText(user_chat).setLanguageCode(LANGUAGECODE);
+                TextInput.newBuilder().setText(user_chat).setLanguageCode(LANGUAGE_CODE);
         QueryInput queryInput = QueryInput.newBuilder().setText(textInput).build();
 
         DetectIntentResponse response = sessionsClient.detectIntent(session, queryInput);
         QueryResult queryResult = response.getQueryResult();
 
         // 여기에 Intent? 전달해줘 안에 값들 변경 필요함
+        //queryResult -> parameter를 Django로 전달해주고
+        //queryResult -> queryText는 user_chat으로 저장
+        // Django에서 받아오는 chatbot_chat의 채팅은 chat_bot에 저장
         // postDjango();
         String chatBot_chat = "챗봇에 얻은 본문";
-        testCreateChat(user_chat, roomId, chatBot_chat);
+//        testCreateChat(user_chat, roomId, chatBot_chat);
 
         return queryResult.getIntent().getDisplayName(); //현재는 아무꺼나
     }

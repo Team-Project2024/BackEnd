@@ -20,6 +20,9 @@ public class GRService {
     private final GRRepository grRepository;
     private final MajorService majorService;
 
+    private static final Long VOLUNTEER = 30L;
+    private static final Long CHAPEL = 4L;
+
     @Transactional(rollbackFor = Exception.class)
     public void createGR(RequestGRListDTO requestGRListDTO){
         List<GraduationRequirements> graduationRequirementsList = new ArrayList<>();
@@ -34,8 +37,8 @@ public class GRService {
                     .majorAdvanced(requestGRDTO.getMajorAdvanced())
                     .freeChoice(requestGRDTO.getFreeChoice())
                     .graduationCredits(requestGRDTO.getGraduationCredits())
-                    .volunteer(requestGRDTO.getVolunteer())
-                    .chapel(requestGRDTO.getChaple())
+                    .volunteer(VOLUNTEER)
+                    .chapel(CHAPEL)
                     .major(majorService.getMajor(requestGRDTO.getMajorId()))
                     .build();
             graduationRequirementsList.add(graduationRequirements);

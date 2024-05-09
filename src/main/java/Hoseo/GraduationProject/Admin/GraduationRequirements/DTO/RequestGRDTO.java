@@ -43,14 +43,6 @@ public class RequestGRDTO {
     @NotNull
     private Long graduationCredits;
 
-    // 봉사
-    @NotNull
-    private Long volunteer;
-
-    // 채플
-    @NotNull
-    private Long chaple;
-
     // 전공 ID
     @NotNull
     private Long majorId;
