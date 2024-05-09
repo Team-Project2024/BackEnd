@@ -1,6 +1,6 @@
 package Hoseo.GraduationProject.Member.Service;
 
-import Hoseo.GraduationProject.Admin.Major.Service.MajorService;
+import Hoseo.GraduationProject.API.Major.Service.AdminMajorService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.DTO.*;
 import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorDTO;
@@ -24,7 +24,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisRepository redisRepository;
-    private final MajorService majorService;
+    private final AdminMajorService adminMajorService;
 
     public void joinProcess(JoinDTO joinDTO){
         // 학번이 같은 회원이 있는지 확인
@@ -51,7 +51,7 @@ public class MemberService {
                         .entrepreneurship(0L)
                         .creativeThinking(0L)
                         .harnessingResource(0L)
-                        .major(majorService.getMajor(joinDTO.getMajorId()))
+                        .major(adminMajorService.getMajor(joinDTO.getMajorId()))
                         .build();
                 memberRepository.save(newMember);
             }
