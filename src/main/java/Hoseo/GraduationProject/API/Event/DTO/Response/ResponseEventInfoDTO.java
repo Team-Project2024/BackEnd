@@ -10,6 +10,6 @@ public class ResponseEventInfoDTO {
     private String eventName;
     private String eventPeriod;
     private String description;
-    private boolean isCancled;
+    private boolean isCanceld;
     private boolean modified;
 }

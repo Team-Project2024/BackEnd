@@ -45,7 +45,7 @@ public class AdminEventController {
     public ResponseEntity<Void> cancelEvent(@RequestParam(required = false) Long eventId){
         if(Objects.isNull(eventId))
             throw new BusinessLogicException(EventExceptionType.INVALID_INPUT_VALUE);
-        adminEventService.cancleEvent(eventId);
+        adminEventService.cancelEvent(eventId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

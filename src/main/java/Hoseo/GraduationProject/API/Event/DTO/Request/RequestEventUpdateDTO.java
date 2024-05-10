@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class RequestEventUpdateDTO {
     @NotNull
-    private Long id;
+    private Long eventId;
     @NotBlank
     private String eventName;
     @NotBlank

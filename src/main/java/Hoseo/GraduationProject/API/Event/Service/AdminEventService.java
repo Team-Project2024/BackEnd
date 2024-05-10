@@ -31,7 +31,7 @@ public class AdminEventService {
             responseEventInfoDTO.setEventName(schoolEvent.getEventName());
             responseEventInfoDTO.setEventPeriod(schoolEvent.getEventPeriod());
             responseEventInfoDTO.setDescription(schoolEvent.getDescription());
-            responseEventInfoDTO.setCancled(schoolEvent.isCanceled());
+            responseEventInfoDTO.setCanceld(schoolEvent.isCanceled());
             responseEventInfoDTO.setModified(schoolEvent.isModified());
             responseEventInfoDTOList.add(responseEventInfoDTO);
         }
@@ -59,7 +59,7 @@ public class AdminEventService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void cancleEvent(Long eventId){
+    public void cancelEvent(Long eventId){
         SchoolEvent schoolEvent = schoolEventRepository.findById(eventId).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
         schoolEvent.cancelEvent();
@@ -73,11 +73,12 @@ public class AdminEventService {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateEvent(RequestEventUpdateDTO requestEventUpdateDTO){
-        SchoolEvent schoolEvent = schoolEventRepository.findById(requestEventUpdateDTO.getId()).orElseThrow(
+        SchoolEvent schoolEvent = schoolEventRepository.findById(requestEventUpdateDTO.getEventId()).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
+        System.out.println(schoolEvent.getId());
 
         SchoolEvent newSchoolEvent = SchoolEvent.builder()
-                .id(requestEventUpdateDTO.getId())
+                .id(requestEventUpdateDTO.getEventId())
                 .eventName(requestEventUpdateDTO.getEventName())
                 .eventPeriod(requestEventUpdateDTO.getEventPeriod())
                 .description(requestEventUpdateDTO.getDescription())
@@ -92,6 +93,7 @@ public class AdminEventService {
         try{
             schoolEventRepository.save(newSchoolEvent);
         } catch (Exception e){
+            System.out.println(schoolEvent.getId());
             throw new BusinessLogicException(EventExceptionType.EVENT_SAVE_ERROR);
         }
     }
