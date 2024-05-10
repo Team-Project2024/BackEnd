@@ -23,7 +23,7 @@ public class StudentEventService {
         responseEventInfoDTO.setEventId(eventId);
         responseEventInfoDTO.setEventName(schoolEvent.getEventName());
         responseEventInfoDTO.setEventPeriod(schoolEvent.getEventPeriod());
-        responseEventInfoDTO.setCancled(schoolEvent.isCanceled());
+        responseEventInfoDTO.setCanceld(schoolEvent.isCanceled());
         responseEventInfoDTO.setModified(schoolEvent.isModified());
 
         return responseEventInfoDTO;
