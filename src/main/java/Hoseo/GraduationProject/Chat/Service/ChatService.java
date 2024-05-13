@@ -1,7 +1,9 @@
 package Hoseo.GraduationProject.Chat.Service;
 
+import Hoseo.GraduationProject.API.Event.DTO.ExDTO;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
+import Hoseo.GraduationProject.Chat.DTO.Django.UnivEventDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
@@ -166,13 +168,17 @@ public class ChatService {
             queryCourseRecommendDTO.setClassMethod(classMethod);
             queryCourseRecommendDTO.setTestType(testType);
 
+            // "0" or "1" 로 오는 String을 "1"과 같다면 true를 아니라면 false로 초기화
+            System.out.println(queryResult.getParameters());
+            queryCourseRecommendDTO.setAiSw("1".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
+
             webClient.post()
                     .uri("/chat/course/query-recommend/")
-                    .body(BodyInserters.fromValue(memberId))
+                    .body(BodyInserters.fromValue(queryCourseRecommendDTO))
                     .retrieve()
                     // 이부분 String을 DTO로 변경 필요함
-                    .bodyToMono(String.class)
-                    .subscribe(response -> System.out.println("Response from Django: " + response));
+                    .bodyToMono(ExDTO.class)
+                    .subscribe(response -> System.out.println("Response from Django: " + response.getMemberId()));
         } else if(intent.equals("HistoryCourseRecommend")){ // 수강 기록 기반 과목 추천
             webClient.post()
                     .uri("/chat/course/history-recommend/")
@@ -187,16 +193,18 @@ public class ChatService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(response -> System.out.println("Response from Django: " + response));
-        } else if(intent.equals("UnivEvent")){ // 학교 행사 조회
-//            UnivEventDTO univEventDTO = new UnivEventDTO();
-//            univEventDTO.setMemberId(memberId);
-//            //month 데이터가 어디에 담겨서 오는지를 모르겠음
-//            univEventDTO.setMonth();
+        } else if(intent.equals("UniEvent")){ // 학교 행사 조회
+            String month = queryResult.getParameters().getFieldsMap().get("month").getStringValue();
+
+            UnivEventDTO univEventDTO = new UnivEventDTO();
+            univEventDTO.setMemberId(memberId);
+            //month 데이터가 어디에 담겨서 오는지를 모르겠음
+            univEventDTO.setMonth(month);
 
             webClient.post()
                     .uri("/chat/univ-event/")
                     //여기에서는 month 랑 memberId를 같이 보내줘야됨
-                    .body(BodyInserters.fromValue(memberId))
+                    .body(BodyInserters.fromValue(univEventDTO))
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(response -> System.out.println("Response from Django: " + response));
