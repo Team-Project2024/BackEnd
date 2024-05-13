@@ -117,12 +117,12 @@ public class ChatService {
         postDjango(queryResult, member.getId());
 
         String chatBot_chat = "챗봇에 얻은 본문";
-//        testCreateChat(user_chat, roomId, chatBot_chat);
+//        saveChat(user_chat, roomId, chatBot_chat);
 
         return queryResult.getIntent().getDisplayName(); //현재는 아무꺼나
     }
 
-    private String testCreateChat(String user_chat, Long chatRoomId, String chatbot_chat){
+    private String saveChat(String user_chat, Long chatRoomId, String chatbot_chat){
         ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
                 () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
         chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
@@ -151,11 +151,9 @@ public class ChatService {
     private void postDjango(QueryResult queryResult, String memberId){
         String intent = queryResult.getIntent().getDisplayName();
         WebClient webClient = WebClient.create(djangoUrl);
-        System.out.println(intent);
 
         if(intent.equals("QueryCourseRecommend")){ // 질문 기반 과목 추천
             String classification = queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().get(0).getStringValue();
-            String teamPlay = queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue();
             String credit = queryResult.getParameters().getFieldsMap().get("credit").getStringValue();
             String classMethod = queryResult.getParameters().getFieldsMap().get("classmethod").getStringValue();
             String testType = queryResult.getParameters().getFieldsMap().get("testType").getStringValue();
@@ -163,13 +161,12 @@ public class ChatService {
             QueryCourseRecommendDTO queryCourseRecommendDTO = new QueryCourseRecommendDTO();
             queryCourseRecommendDTO.setMemberId(memberId);
             queryCourseRecommendDTO.setClassification(classification);
-            queryCourseRecommendDTO.setTeamPlay(Boolean.parseBoolean(teamPlay));
             queryCourseRecommendDTO.setCredit(credit);
             queryCourseRecommendDTO.setClassMethod(classMethod);
             queryCourseRecommendDTO.setTestType(testType);
 
             // "0" or "1" 로 오는 String을 "1"과 같다면 true를 아니라면 false로 초기화
-            System.out.println(queryResult.getParameters());
+            queryCourseRecommendDTO.setTeamPlay("1".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
             queryCourseRecommendDTO.setAiSw("1".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
 
             webClient.post()
@@ -179,21 +176,24 @@ public class ChatService {
                     // 이부분 String을 DTO로 변경 필요함
                     .bodyToMono(ExDTO.class)
                     .subscribe(response -> System.out.println("Response from Django: " + response.getMemberId()));
-        } else if(intent.equals("HistoryCourseRecommend")){ // 수강 기록 기반 과목 추천
+        }
+        else if(intent.equals("HistoryCourseRecommend")){ // 수강 기록 기반 과목 추천
             webClient.post()
                     .uri("/chat/course/history-recommend/")
                     .body(BodyInserters.fromValue(memberId))
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(response -> System.out.println("Response from Django: " + response));
-        } else if(intent.equals("graduationCheck")){ // 졸업요건 조회
+        }
+        else if(intent.equals("graduationCheck")){ // 졸업요건 조회
             webClient.post()
                     .uri("/chat/course/graduation-check/")
                     .body(BodyInserters.fromValue(memberId))
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(response -> System.out.println("Response from Django: " + response));
-        } else if(intent.equals("UniEvent")){ // 학교 행사 조회
+        }
+        else if(intent.equals("UniEvent")){ // 학교 행사 조회
             String month = queryResult.getParameters().getFieldsMap().get("month").getStringValue();
 
             UnivEventDTO univEventDTO = new UnivEventDTO();

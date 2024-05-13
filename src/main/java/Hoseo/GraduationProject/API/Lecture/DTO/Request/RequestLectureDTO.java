@@ -1,5 +1,7 @@
 package Hoseo.GraduationProject.API.Lecture.DTO.Request;
 
+import Hoseo.GraduationProject.API.Lecture.Domain.Lecture;
+import Hoseo.GraduationProject.Member.Domain.Member;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -74,4 +76,28 @@ public class RequestLectureDTO {
     //교수 ID 6자리여야됨
     @NotBlank
     private String memberId;
+
+    public Lecture toEntity(Member member){
+        return Lecture.builder()
+                .lectureName(this.getLectureName())
+                .classification(this.getClassification())
+                .room(this.getRoom())
+                .credit(this.getCredit())
+                .division(this.getDivision())
+                .grade(this.getGrade())
+                .lectureTime(this.getLectureTime())
+                .classMethod(this.getClassMethod())
+                .testType(this.getTestType())
+                .teamwork(this.getTeamwork())
+                .entrepreneurship(this.getEntrepreneurship())
+                .creativeThinking(this.getCreativeThinking())
+                .harnessingResource(this.getHarnessingResource())
+                .teamPlay(this.isTeamPlay())
+                .gradeMethod(this.getGradeMethod())
+                .aiSw(this.isAiSw())
+                .course_evaluation(this.getCourse_evaluation())
+                .member(member)
+                .build();
+    }
+
 }

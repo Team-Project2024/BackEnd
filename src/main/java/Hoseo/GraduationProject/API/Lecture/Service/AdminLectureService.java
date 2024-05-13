@@ -28,30 +28,7 @@ public class AdminLectureService {
 
         List<ResponseLectureDTO> responseLectureListDTOList = new ArrayList<>();
         for (Lecture lecture : lectureList) {
-            ResponseLectureDTO responseLectureDTO = new ResponseLectureDTO();
-            responseLectureDTO.setLectureId(lecture.getId());
-            responseLectureDTO.setLectureName(lecture.getLectureName());
-            responseLectureDTO.setClassification(lecture.getClassification());
-            responseLectureDTO.setRoom(lecture.getRoom());
-            responseLectureDTO.setCredit(lecture.getCredit());
-            responseLectureDTO.setDivision(lecture.getDivision());
-            responseLectureDTO.setGrade(lecture.getGrade());
-            responseLectureDTO.setLectureTime(lecture.getLectureTime());
-            responseLectureDTO.setClassMethod(lecture.getClassMethod());
-            responseLectureDTO.setTestType(lecture.getTestType());
-            responseLectureDTO.setTeamwork(lecture.getTeamwork());
-            responseLectureDTO.setEntrepreneurship(lecture.getEntrepreneurship());
-            responseLectureDTO.setCreativeThinking(lecture.getCreativeThinking());
-            responseLectureDTO.setHarnessingResource(lecture.getHarnessingResource());
-            responseLectureDTO.setTeamPlay(lecture.isTeamPlay());
-            responseLectureDTO.setGradeMethod(lecture.getGradeMethod());
-            responseLectureDTO.setAiSw(lecture.isAiSw());
-            responseLectureDTO.setCourse_evaluation(lecture.getCourse_evaluation());
-            responseLectureDTO.setMemberId(lecture.getMember().getId());
-            responseLectureDTO.setMemberName(lecture.getMember().getName());
-            responseLectureDTO.setDepartment(lecture.getMember().getMajor().getDepartment());
-
-            responseLectureListDTOList.add(responseLectureDTO);
+            responseLectureListDTOList.add(lecture.toDTO());
         }
 
         return responseLectureListDTOList;
@@ -63,29 +40,9 @@ public class AdminLectureService {
         for(RequestLectureDTO requestLectureDTO: requestLectureListDTO.getRequestLectureDTOList()){
             Member member = memberService.getMemberById(requestLectureDTO.getMemberId());
 
-            // 교수만이 강의를 배정 받을 수 있음 때문에 ROLE_PROFESSOR가 아닌 member는 패스
+            // 교수만이 강의를 배정 받을 수 있기 때문에 ROLE_PROFESSOR가 아닌 member는 패스
             if(member.getRole().equals("ROLE_PROFESSOR")){
-                Lecture lecture = Lecture.builder()
-                        .lectureName(requestLectureDTO.getLectureName())
-                        .classification(requestLectureDTO.getClassification())
-                        .room(requestLectureDTO.getRoom())
-                        .credit(requestLectureDTO.getCredit())
-                        .division(requestLectureDTO.getDivision())
-                        .grade(requestLectureDTO.getGrade())
-                        .lectureTime(requestLectureDTO.getLectureTime())
-                        .classMethod(requestLectureDTO.getClassMethod())
-                        .testType(requestLectureDTO.getTestType())
-                        .teamwork(requestLectureDTO.getTeamwork())
-                        .entrepreneurship(requestLectureDTO.getEntrepreneurship())
-                        .creativeThinking(requestLectureDTO.getCreativeThinking())
-                        .harnessingResource(requestLectureDTO.getHarnessingResource())
-                        .teamPlay(requestLectureDTO.isTeamPlay())
-                        .gradeMethod(requestLectureDTO.getGradeMethod())
-                        .aiSw(requestLectureDTO.isAiSw())
-                        .course_evaluation(requestLectureDTO.getCourse_evaluation())
-                        .member(member)
-                        .build();
-                lectureList.add(lecture);
+                lectureList.add(requestLectureDTO.toEntity(member));
             }
         }
         try{

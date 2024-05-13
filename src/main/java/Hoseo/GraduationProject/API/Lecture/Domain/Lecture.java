@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.API.Lecture.Domain;
 
+import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseLectureDTO;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -105,5 +106,32 @@ public class Lecture {
         this.aiSw = aiSw;
         this.course_evaluation = course_evaluation;
         this.member = member;
+    }
+
+    public ResponseLectureDTO toDTO(){
+        ResponseLectureDTO responseLectureDTO = new ResponseLectureDTO();
+        responseLectureDTO.setLectureId(this.getId());
+        responseLectureDTO.setLectureName(this.getLectureName());
+        responseLectureDTO.setClassification(this.getClassification());
+        responseLectureDTO.setRoom(this.getRoom());
+        responseLectureDTO.setCredit(this.getCredit());
+        responseLectureDTO.setDivision(this.getDivision());
+        responseLectureDTO.setGrade(this.getGrade());
+        responseLectureDTO.setLectureTime(this.getLectureTime());
+        responseLectureDTO.setClassMethod(this.getClassMethod());
+        responseLectureDTO.setTestType(this.getTestType());
+        responseLectureDTO.setTeamwork(this.getTeamwork());
+        responseLectureDTO.setEntrepreneurship(this.getEntrepreneurship());
+        responseLectureDTO.setCreativeThinking(this.getCreativeThinking());
+        responseLectureDTO.setHarnessingResource(this.getHarnessingResource());
+        responseLectureDTO.setTeamPlay(this.isTeamPlay());
+        responseLectureDTO.setGradeMethod(this.getGradeMethod());
+        responseLectureDTO.setAiSw(this.isAiSw());
+        responseLectureDTO.setCourse_evaluation(this.getCourse_evaluation());
+        responseLectureDTO.setMemberId(this.getMember().getId());
+        responseLectureDTO.setMemberName(this.getMember().getName());
+        responseLectureDTO.setDepartment(this.getMember().getMajor().getDepartment());
+
+        return responseLectureDTO;
     }
 }
