@@ -33,7 +33,7 @@ public class StudentEventService {
     }
 
     public List<ResponseEventInfoDTO> getEventInfoList(List<Long> eventIds){
-        List<SchoolEvent> schoolEvents = schoolEventRepository.findAllById(eventIds);
+        List<SchoolEvent> schoolEvents = schoolEventRepository.findAllByIds(eventIds);
         List<ResponseEventInfoDTO> responseEventInfoDTOList = new ArrayList<>();
         for (SchoolEvent schoolEvent : schoolEvents) {
             ResponseEventInfoDTO responseEventInfoDTO = new ResponseEventInfoDTO();

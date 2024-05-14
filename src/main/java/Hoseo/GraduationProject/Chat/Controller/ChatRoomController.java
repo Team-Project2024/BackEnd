@@ -18,8 +18,8 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-room")
-    public ResponseEntity<Long> createChatRoom(@AuthenticationPrincipal CustomUserDetails member) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.createChatRoom(member.getMember()));
+    public ResponseEntity<Long> createChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam(required = false) String message) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.createChatRoom(member.getMember(), message));
     }
 
     @GetMapping("/chat-room")

@@ -4,10 +4,10 @@ import Hoseo.GraduationProject.API.Event.Service.StudentEventService;
 import Hoseo.GraduationProject.API.Lecture.Service.StudentLectureService;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
-import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
 import Hoseo.GraduationProject.Chat.DTO.Django.UnivEventDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
@@ -19,6 +19,7 @@ import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.Domain.Member;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -65,7 +66,7 @@ public class ChatService {
     * 특정 채팅방의 모든 채팅을 반환하는 메서드
     */
     @Transactional(readOnly = true)
-    public ResponseChatDTO getChat(Long chatRoomId){
+    public ResponseChatDTO getChat(Long chatRoomId) throws JsonProcessingException {
         List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
 
         // Response DTO를 생성하여 필요한 정보를 매핑합니다.
@@ -151,10 +152,8 @@ public class ChatService {
              */
             if(responseDjangoDTO.getTable().equals("lecture")){
                 saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
-                System.out.println("lecture = " + studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
             } else if(responseDjangoDTO.getTable().equals("school_event")){
                 saveChatBotContent.setData(studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
-                System.out.println("event = " + studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
             }
             return saveChat(user_chat,roomId, saveChatBotContent.toString());
         } else{
@@ -234,8 +233,7 @@ public class ChatService {
         return new ResponseDjangoDTO();
     }
 
-    private ChatBotDTO saveChat(String user_chat, Long chatRoomId, String chatbot_chat){
-        System.out.println(chatbot_chat);
+    private ChatBotDTO saveChat(String user_chat, Long chatRoomId, String chatbot_chat) {
         ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
                 () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
         chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
@@ -256,7 +254,8 @@ public class ChatService {
             chatBotRepository.save(chatBot);
             ChatBotDTO chatBotDTO = new ChatBotDTO();
             chatBotDTO.setId(chatBot.getId());
-            chatBotDTO.setContent(chatbot_chat);
+            chatBotDTO.setContent(chatbot_chat.replaceAll("\\\\", ""));
+            System.out.println(chatBotDTO.getContent());
             return chatBotDTO;
         } catch (Exception e){
             throw new BusinessLogicException(ChatExceptionType.SAVE_CHAT_ERROR);

@@ -25,8 +25,9 @@ public class StudentLectureService {
         return lecture.toDTO();
     }
 
-    public List<ResponseLectureDTO> getLectureListDTO(List<Long> lectureIds){
-        List<Lecture> lectureList = lectureRepository.findAllById(lectureIds);
+    @Transactional(readOnly = true)
+    public List<ResponseLectureDTO> getLectureListDTO(List<Long> ids){
+        List<Lecture> lectureList = lectureRepository.findAllByIds(ids);
         List<ResponseLectureDTO> responseLectureDTOList = new ArrayList<>();
         for(Lecture lecture: lectureList){
             responseLectureDTOList.add(lecture.toDTO());

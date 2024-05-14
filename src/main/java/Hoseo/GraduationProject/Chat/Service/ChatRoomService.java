@@ -23,9 +23,10 @@ public class ChatRoomService {
     private final ChatBotRepository chatBotRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    public Long createChatRoom(Member member){
+    public Long createChatRoom(Member member, String message){
         ChatRoom chatRoom = ChatRoom.builder()
                 .member(member)
+                .firstChat(message)
                 .build();
 
         try{

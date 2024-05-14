@@ -4,6 +4,7 @@ import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.Service.ChatService;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ChatController {
      * 채팅 내역을 가져오는 메서드
      * */
     @GetMapping
-    public ResponseEntity<ResponseChatDTO> getChat(@RequestParam(required = false) Long chatRoomId){
+    public ResponseEntity<ResponseChatDTO> getChat(@RequestParam(required = false) Long chatRoomId) throws JsonProcessingException {
         ResponseChatDTO responseChatDTO = chatService.getChat(chatRoomId);
         if(responseChatDTO.getUserChat().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseChatDTO);
