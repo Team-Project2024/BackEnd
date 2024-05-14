@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StudentLectureService {
@@ -20,5 +23,14 @@ public class StudentLectureService {
                 () -> new BusinessLogicException(LectureExceptionType.LECTURE_NOT_FOUND));
 
         return lecture.toDTO();
+    }
+
+    public List<ResponseLectureDTO> getLectureListDTO(List<Long> lectureIds){
+        List<Lecture> lectureList = lectureRepository.findAllById(lectureIds);
+        List<ResponseLectureDTO> responseLectureDTOList = new ArrayList<>();
+        for(Lecture lecture: lectureList){
+            responseLectureDTOList.add(lecture.toDTO());
+        }
+        return responseLectureDTOList;
     }
 }

@@ -1,8 +1,11 @@
 package Hoseo.GraduationProject.Chat.Service;
 
-import Hoseo.GraduationProject.API.Event.DTO.ExDTO;
+import Hoseo.GraduationProject.API.Event.Service.StudentEventService;
+import Hoseo.GraduationProject.API.Lecture.Service.StudentLectureService;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
+import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
 import Hoseo.GraduationProject.Chat.DTO.Django.UnivEventDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
@@ -51,10 +54,16 @@ public class ChatService {
     private static final String LANGUAGE_CODE = "ko";
     private static final String GOOGLE_SCOPED_URL = "https://www.googleapis.com/auth/cloud-platform";
 
+    private final StudentLectureService studentLectureService;
+    private final StudentEventService studentEventService;
+
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
     private final ChatRoomRepository chatRoomRepository;
 
+    /**
+    * 특정 채팅방의 모든 채팅을 반환하는 메서드
+    */
     @Transactional(readOnly = true)
     public ResponseChatDTO getChat(Long chatRoomId){
         List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
@@ -91,8 +100,12 @@ public class ChatService {
         return responseChatDTO;
     }
 
+    /**
+     * 사용자의 채팅 요청이 들어오면 챗봇의 대답 생성을 위한 메서드
+     * Dialog Flow에
+     */
     @Transactional(rollbackFor = Exception.class)
-    public String detectIntentWithLocation(String user_chat,Long roomId, Member member) throws IOException, ApiException {
+    public ChatBotDTO detectIntentWithLocation(String user_chat,Long roomId, Member member) throws IOException, ApiException {
         //Google 사용자 권한 인증
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/" + CredentialFileURL))
                 .createScoped(GOOGLE_SCOPED_URL);
@@ -110,45 +123,51 @@ public class ChatService {
                 TextInput.newBuilder().setText(user_chat).setLanguageCode(LANGUAGE_CODE);
         QueryInput queryInput = QueryInput.newBuilder().setText(textInput).build();
 
+        // Dialog flow의 요청을 받는 변수
         DetectIntentResponse response = sessionsClient.detectIntent(session, queryInput);
+        // 사용할 데이터를 분리
         QueryResult queryResult = response.getQueryResult();
 
-        //postDjango에서 가져오는 고정이어야됨 content, table, [pk] 이렇게 가져오는게 제일 베스트
-        postDjango(queryResult, member.getId());
+        /**
+         * Django로 부터 값을 받아옴
+         * 반환 값 - content, table, [pk]
+         */
+        ResponseDjangoDTO responseDjangoDTO = postDjango(queryResult, member.getId());
 
-        String chatBot_chat = "챗봇에 얻은 본문";
-//        saveChat(user_chat, roomId, chatBot_chat);
+        /**
+         * table에 맞게 service에다 PK 리스트로 전달해서 DTO로 변환 해서 받아오면 다 다른 DTO가 됨 아닌가? content에 제네릭으로 Object 받으면 안됨?
+         *
+         */
+        if(!responseDjangoDTO.getContent().isEmpty()){
+            SaveChatBotContent saveChatBotContent = new SaveChatBotContent();
+            saveChatBotContent.setContent(responseDjangoDTO.getContent());
+            saveChatBotContent.setTable(responseDjangoDTO.getTable());
 
-        return queryResult.getIntent().getDisplayName(); //현재는 아무꺼나
-    }
-
-    private String saveChat(String user_chat, Long chatRoomId, String chatbot_chat){
-        ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
-        chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
-
-        UserChat userChat = UserChat.builder()
-                .chatDate(new Timestamp(System.currentTimeMillis()))
-                .chatRoom(chatroom)
-                .content(user_chat)
-                .build();
-
-        ChatBot chatBot = ChatBot.builder()
-                .content(chatbot_chat)
-                .userChat(userChat)
-                .build();
-        try{
-            chatRoomRepository.save(chatroom);
-            userChatRepository.save(userChat);
-            chatBotRepository.save(chatBot);
-        } catch (Exception e){
-            throw new BusinessLogicException(ChatExceptionType.SAVE_CHAT_ERROR);
+            /**
+             * table에 따라 다른 service 레이어에서 데이터를 가져옴
+             * 이 부분에서는 getContent는 비어있지 않지만 table이 비어있는 DialogFlow에서 바로 답변이 오는 부분은
+             * 따로 data를 가져올 필요가 없기 때문에 처리하지 않음
+             * 졸업요건도 data부분이 비어서 오기 때문에 함께 처리
+             */
+            if(responseDjangoDTO.getTable().equals("lecture")){
+                saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
+                System.out.println("lecture = " + studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
+            } else if(responseDjangoDTO.getTable().equals("school_event")){
+                saveChatBotContent.setData(studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
+                System.out.println("event = " + studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
+            }
+            return saveChat(user_chat,roomId, saveChatBotContent.toString());
+        } else{
+            // 예외처리
+            throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
         }
-        return chatbot_chat;
     }
 
-    //postDjango에서 반환하는 값이 같아야됨 다시 돌아가서 데이터 가져오는게 나을듯
-    private void postDjango(QueryResult queryResult, String memberId){
+    /**
+     * Dialog flow로부터 받은 데이터를 Django에 있는 추천시스템으로 보내여 챗봇의 답변과 데이터를 긁어온 테이블, PK값을 리스트로 전달받음
+     * 만약 학사 관련 데이터가 아닐 경우에는 Django로 데이터를 보내지 않고 Dialog flow로 부터 바로 답변이 옴
+     */
+    private ResponseDjangoDTO postDjango(QueryResult queryResult, String memberId){
         String intent = queryResult.getIntent().getDisplayName();
         WebClient webClient = WebClient.create(djangoUrl);
 
@@ -169,29 +188,29 @@ public class ChatService {
             queryCourseRecommendDTO.setTeamPlay("1".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
             queryCourseRecommendDTO.setAiSw("1".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
 
-            webClient.post()
+            return webClient.post()
                     .uri("/chat/course/query-recommend/")
                     .body(BodyInserters.fromValue(queryCourseRecommendDTO))
                     .retrieve()
                     // 이부분 String을 DTO로 변경 필요함
-                    .bodyToMono(ExDTO.class)
-                    .subscribe(response -> System.out.println("Response from Django: " + response.getMemberId()));
+                    .bodyToMono(ResponseDjangoDTO.class)
+                    .block();
         }
         else if(intent.equals("HistoryCourseRecommend")){ // 수강 기록 기반 과목 추천
-            webClient.post()
+            return webClient.post()
                     .uri("/chat/course/history-recommend/")
                     .body(BodyInserters.fromValue(memberId))
                     .retrieve()
-                    .bodyToMono(String.class)
-                    .subscribe(response -> System.out.println("Response from Django: " + response));
+                    .bodyToMono(ResponseDjangoDTO.class)
+                    .block();
         }
         else if(intent.equals("graduationCheck")){ // 졸업요건 조회
-            webClient.post()
+            return webClient.post()
                     .uri("/chat/course/graduation-check/")
                     .body(BodyInserters.fromValue(memberId))
                     .retrieve()
-                    .bodyToMono(String.class)
-                    .subscribe(response -> System.out.println("Response from Django: " + response));
+                    .bodyToMono(ResponseDjangoDTO.class)
+                    .block();
         }
         else if(intent.equals("UniEvent")){ // 학교 행사 조회
             String month = queryResult.getParameters().getFieldsMap().get("month").getStringValue();
@@ -201,16 +220,46 @@ public class ChatService {
             //month 데이터가 어디에 담겨서 오는지를 모르겠음
             univEventDTO.setMonth(month);
 
-            webClient.post()
+            return webClient.post()
                     .uri("/chat/univ-event/")
                     //여기에서는 month 랑 memberId를 같이 보내줘야됨
                     .body(BodyInserters.fromValue(univEventDTO))
                     .retrieve()
-                    .bodyToMono(String.class)
-                    .subscribe(response -> System.out.println("Response from Django: " + response));
+                    .bodyToMono(ResponseDjangoDTO.class)
+                    .block();
         } else {
-            //에러 반환 ㄱㄱ
+            // 이 부분은 DialogFlow에서 받은 문장을 보내주면 됨 Django로 넘어가지 않고 답변 주는 형태임
             System.out.println("해당 없음");
+        }
+        return new ResponseDjangoDTO();
+    }
+
+    private ChatBotDTO saveChat(String user_chat, Long chatRoomId, String chatbot_chat){
+        System.out.println(chatbot_chat);
+        ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
+        chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
+
+        UserChat userChat = UserChat.builder()
+                .chatDate(new Timestamp(System.currentTimeMillis()))
+                .chatRoom(chatroom)
+                .content(user_chat)
+                .build();
+
+        ChatBot chatBot = ChatBot.builder()
+                .content(chatbot_chat)
+                .userChat(userChat)
+                .build();
+        try{
+            chatRoomRepository.save(chatroom);
+            userChatRepository.save(userChat);
+            chatBotRepository.save(chatBot);
+            ChatBotDTO chatBotDTO = new ChatBotDTO();
+            chatBotDTO.setId(chatBot.getId());
+            chatBotDTO.setContent(chatbot_chat);
+            return chatBotDTO;
+        } catch (Exception e){
+            throw new BusinessLogicException(ChatExceptionType.SAVE_CHAT_ERROR);
         }
     }
 }

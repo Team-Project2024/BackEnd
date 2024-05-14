@@ -1,4 +1,4 @@
-package Hoseo.GraduationProject.API.Event.DTO.Response;
+package Hoseo.GraduationProject.Chat.DTO.Django;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,13 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResponseEventInfoDTO {
-    private Long eventId;
-    private String eventName;
-    private String eventPeriod;
-    private String description;
-    private boolean isCanceld;
-    private boolean modified;
+public class SaveChatBotContent {
+    private String content;
+    private String table;
+    private String data;
 
     @Override
     public String toString() {
@@ -24,4 +21,5 @@ public class ResponseEventInfoDTO {
             return "{}";
         }
     }
+
 }

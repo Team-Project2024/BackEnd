@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StudentEventService {
@@ -27,5 +30,20 @@ public class StudentEventService {
         responseEventInfoDTO.setModified(schoolEvent.isModified());
 
         return responseEventInfoDTO;
+    }
+
+    public List<ResponseEventInfoDTO> getEventInfoList(List<Long> eventIds){
+        List<SchoolEvent> schoolEvents = schoolEventRepository.findAllById(eventIds);
+        List<ResponseEventInfoDTO> responseEventInfoDTOList = new ArrayList<>();
+        for (SchoolEvent schoolEvent : schoolEvents) {
+            ResponseEventInfoDTO responseEventInfoDTO = new ResponseEventInfoDTO();
+            responseEventInfoDTO.setEventId(schoolEvent.getId());
+            responseEventInfoDTO.setEventName(schoolEvent.getEventName());
+            responseEventInfoDTO.setEventPeriod(schoolEvent.getEventPeriod());
+            responseEventInfoDTO.setCanceld(schoolEvent.isCanceled());
+            responseEventInfoDTO.setModified(schoolEvent.isModified());
+            responseEventInfoDTOList.add(responseEventInfoDTO);
+        }
+        return responseEventInfoDTOList;
     }
 }

@@ -1,5 +1,7 @@
 package Hoseo.GraduationProject.API.Lecture.DTO.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,4 +65,14 @@ public class ResponseLectureDTO {
 
     //교수 학과
     private String department;
+
+    @Override
+    public String toString() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return "{}";
+        }
+    }
 }
