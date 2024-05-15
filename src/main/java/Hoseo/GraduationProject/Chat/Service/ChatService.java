@@ -19,7 +19,6 @@ import Hoseo.GraduationProject.Chat.Repository.ChatRoomRepository;
 import Hoseo.GraduationProject.Chat.Repository.UserChatRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.Domain.Member;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -66,7 +65,7 @@ public class ChatService {
     * 특정 채팅방의 모든 채팅을 반환하는 메서드
     */
     @Transactional(readOnly = true)
-    public ResponseChatDTO getChat(Long chatRoomId) throws JsonProcessingException {
+    public ResponseChatDTO getChat(Long chatRoomId) {
         List<UserChat> userChats = userChatRepository.findByChatRoomId(chatRoomId);
 
         // Response DTO를 생성하여 필요한 정보를 매핑합니다.

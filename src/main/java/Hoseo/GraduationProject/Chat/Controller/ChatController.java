@@ -21,7 +21,7 @@ public class ChatController {
     private final ChatService chatService;
 
     /**
-    * 채팅 메서드
+    * 챗봇에 메시지를 보내고 답변을 받아오는 메서드
     * */
     @PostMapping
     public ResponseEntity<ChatBotDTO> chat(@AuthenticationPrincipal CustomUserDetails member,

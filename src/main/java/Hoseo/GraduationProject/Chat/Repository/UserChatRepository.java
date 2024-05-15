@@ -23,5 +23,6 @@ public interface UserChatRepository extends JpaRepository<UserChat, Long> {
     @Query(value = "DELETE FROM user_chat WHERE room_id IN (SELECT id FROM chat_room WHERE member_id = :memberId)", nativeQuery = true)
     void deleteByMemberId(@Param("memberId") String memberId);
 
+    @Query("SELECT uc FROM UserChat uc JOIN FETCH uc.chatBot cb WHERE uc.chatRoom.id = :chatRoomId")
     List<UserChat> findByChatRoomId(Long chatRoomId);
 }
