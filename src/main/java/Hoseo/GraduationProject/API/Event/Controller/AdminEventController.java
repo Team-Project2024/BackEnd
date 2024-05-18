@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,18 +41,25 @@ public class AdminEventController {
     }
 
     // 이벤트 취소 API
-    @PutMapping("/cancel")
-    public ResponseEntity<Void> cancelEvent(@RequestParam(required = false) Long eventId){
-        if(Objects.isNull(eventId))
+    @PutMapping({"/cancel/{eventId}", "/cancel"})
+    public ResponseEntity<Void> cancelEvent(@PathVariable(value = "eventId", required = false) Optional<Long> eventId){
+        if (eventId.isEmpty()) {
             throw new BusinessLogicException(EventExceptionType.INVALID_INPUT_VALUE);
-        adminEventService.cancelEvent(eventId);
+        }
+        System.out.println(eventId);
+        adminEventService.cancelEvent(eventId.get());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 이벤트 수정 API
-    @PutMapping("/update")
-    public ResponseEntity<Void> updateEvent(@Valid @RequestBody RequestEventUpdateDTO requestEventUpdateDTO){
-        adminEventService.updateEvent(requestEventUpdateDTO);
+    @PutMapping({"/update/{eventId}", "/update"})
+    public ResponseEntity<Void> updateEvent(
+            @PathVariable(value = "eventId", required = false) Optional<Long> eventId,
+            @Valid @RequestBody RequestEventUpdateDTO requestEventUpdateDTO){
+        if(eventId.isEmpty()) {
+            throw new BusinessLogicException(EventExceptionType.INVALID_INPUT_VALUE);
+        }
+        adminEventService.updateEvent(eventId.get(), requestEventUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

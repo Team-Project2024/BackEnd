@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,10 +31,10 @@ public class AdminLectureController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping
-    public ResponseEntity<Void> deleteLecture(@RequestParam(required = false) Long lectureId){
-        if(Objects.isNull(lectureId)) throw new BusinessLogicException(LectureExceptionType.INVALID_INPUT_VALUE);
-        adminLectureService.deleteLecture(lectureId);
+    @PutMapping({"/{lectureId}", ""})
+    public ResponseEntity<Void> deleteLecture(@PathVariable(value = "lectureId", required = false) Optional<Long> lectureId){
+        if(lectureId.isEmpty()) throw new BusinessLogicException(LectureExceptionType.INVALID_INPUT_VALUE);
+        adminLectureService.deleteLecture(lectureId.get());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

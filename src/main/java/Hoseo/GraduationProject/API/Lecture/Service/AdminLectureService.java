@@ -56,11 +56,6 @@ public class AdminLectureService {
     public void deleteLecture(Long lectureId){
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(
                 () -> new BusinessLogicException(LectureExceptionType.LECTURE_NOT_FOUND));
-        try{
-            lecture.deleteLecture();
-            lectureRepository.save(lecture);
-        } catch(Exception e){
-            throw new BusinessLogicException(LectureExceptionType.LECTURE_SAVE_ERROR);
-        }
+        lecture.deleteLecture();
     }
 }

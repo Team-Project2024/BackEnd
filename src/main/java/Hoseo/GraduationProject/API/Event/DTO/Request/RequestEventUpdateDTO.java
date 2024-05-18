@@ -2,15 +2,12 @@ package Hoseo.GraduationProject.API.Event.DTO.Request;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class RequestEventUpdateDTO {
-    @NotNull
-    private Long eventId;
     @NotBlank
     private String eventName;
     @NotBlank

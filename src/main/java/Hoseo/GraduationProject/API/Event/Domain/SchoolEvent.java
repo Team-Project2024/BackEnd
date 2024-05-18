@@ -31,6 +31,17 @@ public class SchoolEvent {
     @Column(name = "modified")
     private boolean modified;
 
+    public void updateEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public void updateEventPeriod(String eventPeriod) {
+        this.eventPeriod = eventPeriod;
+    }
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
     public void cancelEvent(){
         this.isCanceled = true;
     }

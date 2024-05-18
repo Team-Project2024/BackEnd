@@ -63,38 +63,20 @@ public class AdminEventService {
         SchoolEvent schoolEvent = schoolEventRepository.findById(eventId).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
         schoolEvent.cancelEvent();
-
-        try{
-            schoolEventRepository.save(schoolEvent);
-        } catch (Exception e){
-            throw new BusinessLogicException(EventExceptionType.EVENT_SAVE_ERROR);
-        }
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateEvent(RequestEventUpdateDTO requestEventUpdateDTO){
-        SchoolEvent schoolEvent = schoolEventRepository.findById(requestEventUpdateDTO.getEventId()).orElseThrow(
+    public void updateEvent(Long eventId, RequestEventUpdateDTO requestEventUpdateDTO){
+        SchoolEvent schoolEvent = schoolEventRepository.findById(eventId).orElseThrow(
                 () -> new BusinessLogicException(EventExceptionType.EVENT_NOT_FOUND));
-        System.out.println(schoolEvent.getId());
-
-        SchoolEvent newSchoolEvent = SchoolEvent.builder()
-                .id(requestEventUpdateDTO.getEventId())
-                .eventName(requestEventUpdateDTO.getEventName())
-                .eventPeriod(requestEventUpdateDTO.getEventPeriod())
-                .description(requestEventUpdateDTO.getDescription())
-                .isCanceled(schoolEvent.isCanceled())
-                .build();
 
         //날짜 변경 여부 확인
         if(!Objects.equals(schoolEvent.getEventPeriod(), requestEventUpdateDTO.getEventPeriod())){
-            newSchoolEvent.modifiedEvent();
+            schoolEvent.modifiedEvent();
         }
 
-        try{
-            schoolEventRepository.save(newSchoolEvent);
-        } catch (Exception e){
-            System.out.println(schoolEvent.getId());
-            throw new BusinessLogicException(EventExceptionType.EVENT_SAVE_ERROR);
-        }
+        schoolEvent.updateEventName(requestEventUpdateDTO.getEventName());
+        schoolEvent.updateEventPeriod(requestEventUpdateDTO.getEventPeriod());
+        schoolEvent.updateDescription(requestEventUpdateDTO.getDescription());
     }
 }
