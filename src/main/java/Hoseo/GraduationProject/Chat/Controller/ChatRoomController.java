@@ -1,6 +1,6 @@
 package Hoseo.GraduationProject.Chat.Controller;
 
-import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseListChatRoomDTO;
 import Hoseo.GraduationProject.Chat.Service.ChatRoomService;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -23,12 +21,12 @@ public class ChatRoomController {
     }
 
     @GetMapping("/chat-room")
-    public ResponseEntity<List<ResponseChatRoomDTO>> getChatRoomList(@AuthenticationPrincipal CustomUserDetails member) {
-        List<ResponseChatRoomDTO> chatRoomList = chatRoomService.getChatRoomList(member.getMember());
-        if(chatRoomList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(chatRoomList);
+    public ResponseEntity<ResponseListChatRoomDTO> getChatRoomList(@AuthenticationPrincipal CustomUserDetails member) {
+        ResponseListChatRoomDTO responseListChatRoomDTO = chatRoomService.getChatRoomList(member.getMember());
+        if(responseListChatRoomDTO.getRepsonseChatRoomDTOList().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseListChatRoomDTO);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(chatRoomList);
+        return ResponseEntity.status(HttpStatus.OK).body(responseListChatRoomDTO);
     }
 
     @DeleteMapping("/chat-room")

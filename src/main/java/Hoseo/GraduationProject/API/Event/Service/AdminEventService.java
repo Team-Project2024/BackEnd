@@ -4,6 +4,7 @@ import Hoseo.GraduationProject.API.Event.DTO.Request.RequestEventDTO;
 import Hoseo.GraduationProject.API.Event.DTO.Request.RequestEventListDTO;
 import Hoseo.GraduationProject.API.Event.DTO.Request.RequestEventUpdateDTO;
 import Hoseo.GraduationProject.API.Event.DTO.Response.ResponseEventInfoDTO;
+import Hoseo.GraduationProject.API.Event.DTO.Response.ResponseListEventInfoDTO;
 import Hoseo.GraduationProject.API.Event.Domain.SchoolEvent;
 import Hoseo.GraduationProject.API.Event.ExceptionType.EventExceptionType;
 import Hoseo.GraduationProject.API.Event.Repository.SchoolEventRepository;
@@ -22,7 +23,8 @@ public class AdminEventService {
     private final SchoolEventRepository schoolEventRepository;
 
     @Transactional(readOnly = true)
-    public List<ResponseEventInfoDTO> getAllEvents() {
+    public ResponseListEventInfoDTO getAllEvents() {
+        ResponseListEventInfoDTO responseListEventInfoDTO = new ResponseListEventInfoDTO();
         List<SchoolEvent> schoolEvents = schoolEventRepository.findAll();
         List<ResponseEventInfoDTO> responseEventInfoDTOList = new ArrayList<>();
         for (SchoolEvent schoolEvent : schoolEvents) {
@@ -35,7 +37,8 @@ public class AdminEventService {
             responseEventInfoDTO.setModified(schoolEvent.isModified());
             responseEventInfoDTOList.add(responseEventInfoDTO);
         }
-        return responseEventInfoDTOList;
+        responseListEventInfoDTO.setResponseEventInfoDTOList(responseEventInfoDTOList);
+        return responseListEventInfoDTO;
     }
 
     @Transactional(rollbackFor = Exception.class)

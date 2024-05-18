@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.API.Lecture.Controller;
 
 import Hoseo.GraduationProject.API.Lecture.DTO.Request.RequestLectureListDTO;
-import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseLectureDTO;
+import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseListLectureDTO;
 import Hoseo.GraduationProject.API.Lecture.ExceptionType.LectureExceptionType;
 import Hoseo.GraduationProject.API.Lecture.Service.AdminLectureService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,7 +20,11 @@ public class AdminLectureController {
     private final AdminLectureService adminLectureService;
 
     @GetMapping
-    public ResponseEntity<List<ResponseLectureDTO>> getLectureList(){
+    public ResponseEntity<ResponseListLectureDTO> getLectureList(){
+        ResponseListLectureDTO responseListLectureDTO = adminLectureService.getLectureList();
+        if(responseListLectureDTO.getResponseLectureDTOList().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(adminLectureService.getLectureList());
+        }
         return ResponseEntity.status(HttpStatus.OK).body(adminLectureService.getLectureList());
     }
 

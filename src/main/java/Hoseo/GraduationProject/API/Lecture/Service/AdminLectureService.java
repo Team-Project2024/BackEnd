@@ -3,6 +3,7 @@ package Hoseo.GraduationProject.API.Lecture.Service;
 import Hoseo.GraduationProject.API.Lecture.DTO.Request.RequestLectureDTO;
 import Hoseo.GraduationProject.API.Lecture.DTO.Request.RequestLectureListDTO;
 import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseLectureDTO;
+import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseListLectureDTO;
 import Hoseo.GraduationProject.API.Lecture.Domain.Lecture;
 import Hoseo.GraduationProject.API.Lecture.ExceptionType.LectureExceptionType;
 import Hoseo.GraduationProject.API.Lecture.Repository.LectureRepository;
@@ -23,15 +24,16 @@ public class AdminLectureService {
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
-    public List<ResponseLectureDTO> getLectureList(){
+    public ResponseListLectureDTO getLectureList(){
         List<Lecture> lectureList = lectureRepository.findAllWithMemberAndMajor();
 
+        ResponseListLectureDTO responseListLectureDTO = new ResponseListLectureDTO();
         List<ResponseLectureDTO> responseLectureListDTOList = new ArrayList<>();
         for (Lecture lecture : lectureList) {
             responseLectureListDTOList.add(lecture.toDTO());
         }
-
-        return responseLectureListDTOList;
+        responseListLectureDTO.setResponseLectureDTOList(responseLectureListDTOList);
+        return responseListLectureDTO;
     }
 
     @Transactional(rollbackFor = Exception.class)

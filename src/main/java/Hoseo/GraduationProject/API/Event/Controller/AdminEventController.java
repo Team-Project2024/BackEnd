@@ -2,7 +2,7 @@ package Hoseo.GraduationProject.API.Event.Controller;
 
 import Hoseo.GraduationProject.API.Event.DTO.Request.RequestEventListDTO;
 import Hoseo.GraduationProject.API.Event.DTO.Request.RequestEventUpdateDTO;
-import Hoseo.GraduationProject.API.Event.DTO.Response.ResponseEventInfoDTO;
+import Hoseo.GraduationProject.API.Event.DTO.Response.ResponseListEventInfoDTO;
 import Hoseo.GraduationProject.API.Event.ExceptionType.EventExceptionType;
 import Hoseo.GraduationProject.API.Event.Service.AdminEventService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,10 +25,10 @@ public class AdminEventController {
     // 모든 이벤트 조회
     // 조건을 걸어서 특정 이벤트만 조회하는게 나을라나?
     @GetMapping
-    public ResponseEntity<List<ResponseEventInfoDTO>> getAllEvents() {
-        List<ResponseEventInfoDTO> responseEventInfoDTOS = adminEventService.getAllEvents();
-        if(responseEventInfoDTOS.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseEventInfoDTOS);
+    public ResponseEntity<ResponseListEventInfoDTO> getAllEvents() {
+        ResponseListEventInfoDTO responseListEventInfoDTO = adminEventService.getAllEvents();
+        if(responseListEventInfoDTO.getResponseEventInfoDTOList().isEmpty())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseListEventInfoDTO);
         return ResponseEntity.status(HttpStatus.OK).body(adminEventService.getAllEvents());
     }
 

@@ -1,6 +1,7 @@
 package Hoseo.GraduationProject.Chat.Service;
 
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatRoomDTO;
+import Hoseo.GraduationProject.Chat.DTO.Response.ResponseListChatRoomDTO;
 import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
 import Hoseo.GraduationProject.Chat.ExceptionType.ChatRoomExceptionType;
 import Hoseo.GraduationProject.Chat.Repository.ChatBotRepository;
@@ -39,8 +40,9 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseChatRoomDTO> getChatRoomList(Member member){
+    public ResponseListChatRoomDTO getChatRoomList(Member member){
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberId(member.getId());
+        ResponseListChatRoomDTO responseListChatRoomDTO = new ResponseListChatRoomDTO();
         List<ResponseChatRoomDTO> responseChatRoomDTOList = new ArrayList<>();
 
         for(ChatRoom chatRoom : chatRooms){
@@ -51,7 +53,8 @@ public class ChatRoomService {
             responseChatRoomDTOList.add(responseChatRoomDTO);
         }
 
-        return responseChatRoomDTOList;
+        responseListChatRoomDTO.setRepsonseChatRoomDTOList(responseChatRoomDTOList);
+        return responseListChatRoomDTO;
     }
 
     @Transactional(rollbackFor = Exception.class)
