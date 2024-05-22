@@ -164,7 +164,10 @@ public class ChatService {
 
         switch (intent) {
             case "QueryCourseRecommend" -> {
-                String classification = queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().get(0).getStringValue();
+                String classification = "";
+                if(!queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().isEmpty()){
+                    classification = queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().get(0).getStringValue();
+                }
                 String credit = queryResult.getParameters().getFieldsMap().get("credit").getStringValue();
                 String classMethod = queryResult.getParameters().getFieldsMap().get("classmethod").getStringValue();
                 String testType = queryResult.getParameters().getFieldsMap().get("testType").getStringValue();
