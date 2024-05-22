@@ -16,6 +16,9 @@ public interface MemberRepository extends JpaRepository<Member,String> {
 
     @Transactional
     @Modifying
-    @Query("SELECT m FROM Member m JOIN FETCH m.major WHERE m.role = 'ROLE_PROFESSOR'")
+    @Query("SELECT m FROM Member m JOIN FETCH m.major JOIN FETCH m.confirmCompletion WHERE m.role = 'ROLE_PROFESSOR'")
     List<Member> findByRoleProfessor();
+
+    @Query("SELECT m FROM Member m JOIN FETCH m.major JOIN FETCH m.confirmCompletion")
+    List<Member> find();
 }

@@ -1,11 +1,16 @@
 package Hoseo.GraduationProject.API.Lecture.Domain;
 
 import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseLectureDTO;
+import Hoseo.GraduationProject.Domain.CourseDetails;
 import Hoseo.GraduationProject.Member.Domain.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -70,13 +75,13 @@ public class Lecture {
     private Long course_evaluation;
 
     //교수 정보
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
-//    private List<CourseDetails> courseDetails = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
+    private List<CourseDetails> courseDetails = new ArrayList<>();
 
     public void deleteLecture(){
         this.room = null;

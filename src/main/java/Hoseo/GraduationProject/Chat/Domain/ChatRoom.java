@@ -1,12 +1,15 @@
 package Hoseo.GraduationProject.Chat.Domain;
 
 import Hoseo.GraduationProject.Member.Domain.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +25,10 @@ public class ChatRoom {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY)
+    private List<UserChat> userChats = new ArrayList<>();
 
     @Column(name = "last_chat_date")
     private Timestamp lastChatDate;

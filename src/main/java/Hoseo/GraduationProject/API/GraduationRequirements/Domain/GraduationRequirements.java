@@ -52,8 +52,7 @@ public class GraduationRequirements {
     @Column(name = "chapel")
     private Long chapel;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "major_id")
     private Major major;
 

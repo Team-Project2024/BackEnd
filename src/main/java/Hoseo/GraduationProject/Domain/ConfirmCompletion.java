@@ -17,8 +17,7 @@ public class ConfirmCompletion {
     @Column(name = "id")
     private Long id;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", unique = true)
     private Member member;
 

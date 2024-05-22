@@ -1,12 +1,20 @@
 package Hoseo.GraduationProject.Member.Domain;
 
+import Hoseo.GraduationProject.API.Lecture.Domain.Lecture;
 import Hoseo.GraduationProject.API.Major.Domain.Major;
+import Hoseo.GraduationProject.Chat.Domain.ChatRoom;
+import Hoseo.GraduationProject.Domain.ConfirmCompletion;
+import Hoseo.GraduationProject.Domain.CourseDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,20 +55,26 @@ public class Member {
     @Column(name="harnessing_resource")
     private Long harnessingResource;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "major_id")
     private Major major;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "id")
-//    private ConfirmCompletion confirmCompletion;
-//
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<Lecture> lectures = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<CourseDetails> courseDetails = new ArrayList<>();
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private ConfirmCompletion confirmCompletion;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Lecture> lectures = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<CourseDetails> courseDetails = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
 
     public void updatePassword(String password){
         this.password = password;
