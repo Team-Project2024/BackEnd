@@ -23,7 +23,6 @@ public class AdminEventController {
     private final AdminEventService adminEventService;
 
     // 모든 이벤트 조회
-    // 조건을 걸어서 특정 이벤트만 조회하는게 나을라나?
     @GetMapping
     public ResponseEntity<ResponseListEventInfoDTO> getAllEvents() {
         ResponseListEventInfoDTO responseListEventInfoDTO = adminEventService.getAllEvents();
@@ -45,7 +44,6 @@ public class AdminEventController {
         if (eventId.isEmpty()) {
             throw new BusinessLogicException(EventExceptionType.INVALID_INPUT_VALUE);
         }
-        System.out.println(eventId);
         adminEventService.cancelEvent(eventId.get());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
