@@ -6,6 +6,7 @@ import Hoseo.GraduationProject.API.Lecture.ExceptionType.LectureExceptionType;
 import Hoseo.GraduationProject.API.Lecture.Repository.LectureRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class StudentLectureService {
     private final LectureRepository lectureRepository;
@@ -21,7 +23,7 @@ public class StudentLectureService {
     public ResponseLectureDTO getLectureInfo(Long lectureId){
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(
                 () -> new BusinessLogicException(LectureExceptionType.LECTURE_NOT_FOUND));
-
+        log.info("Lecture Recommend {}", lecture.getLectureName());
         return lecture.toDTO();
     }
 

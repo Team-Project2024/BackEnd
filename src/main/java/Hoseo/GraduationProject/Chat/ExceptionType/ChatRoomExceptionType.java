@@ -4,6 +4,7 @@ import Hoseo.GraduationProject.Exception.ExceptionType;
 
 public enum ChatRoomExceptionType implements ExceptionType {
     SAVE_CHATROOM_ERROR(400,"채팅방 생성에 실패하였습니다."),
+    DELETE_CHATROOM_ERROR(400, "채팅방 삭제에 실패하였습니다."),
     NOT_FOUND_CHATROOM(404, "채팅방을 찾을 수 없습니다.");
 
 

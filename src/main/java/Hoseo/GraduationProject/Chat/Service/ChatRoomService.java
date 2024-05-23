@@ -60,15 +60,23 @@ public class ChatRoomService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteChatRoom(Member member, Long chatRoomId){
         //채팅방 삭제
-        chatBotRepository.deleteByChatRoomId(chatRoomId);
-        userChatRepository.deleteByChatRoomId(chatRoomId);
-        chatRoomRepository.deleteByIdAndMemberId(chatRoomId, member.getId());
+        try{
+            chatBotRepository.deleteByChatRoomId(chatRoomId);
+            userChatRepository.deleteByChatRoomId(chatRoomId);
+            chatRoomRepository.deleteByIdAndMemberId(chatRoomId, member.getId());
+        } catch (Exception e){
+            throw new BusinessLogicException(ChatRoomExceptionType.DELETE_CHATROOM_ERROR);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteAllChatRoom(Member member){
-        chatBotRepository.deleteByMemberId(member.getId());
-        userChatRepository.deleteByMemberId(member.getId());
-        chatRoomRepository.deleteAllByMemberId(member.getId());
+        try{
+            chatBotRepository.deleteByMemberId(member.getId());
+            userChatRepository.deleteByMemberId(member.getId());
+            chatRoomRepository.deleteAllByMemberId(member.getId());
+        } catch (Exception e){
+            throw new BusinessLogicException(ChatRoomExceptionType.DELETE_CHATROOM_ERROR);
+        }
     }
 }

@@ -24,6 +24,7 @@ import com.google.api.gax.rpc.ApiException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.dialogflow.v2.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatService {
 
@@ -128,29 +130,23 @@ public class ChatService {
             // 사용할 데이터를 분리
             QueryResult queryResult = response.getQueryResult();
 
-            /**
-             * Django로 부터 값을 받아옴
-             * postDjango의 반환 DTO - content, table, [pk]
-             */
             ResponseDjangoDTO responseDjangoDTO = postDjango(queryResult, member.getId());
 
             SaveChatBotContent saveChatBotContent = new SaveChatBotContent();
             saveChatBotContent.setContent(responseDjangoDTO.getContent());
             saveChatBotContent.setTable(responseDjangoDTO.getTable());
 
-            /**
-             * table에 따라 다른 service 레이어에서 데이터를 가져옴
-             * 이 부분에서는 getContent는 비어있지 않지만 table이 비어있는 DialogFlow에서 바로 답변이 오는 부분은
-             * 따로 data를 가져올 필요가 없기 때문에 처리하지 않음
-             * 졸업요건도 data부분이 비어서 오기 때문에 함께 처리
-             */
+            // Lecture, School_Event 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
             if (responseDjangoDTO.getTable().equals("lecture")) {
                 saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
             } else if (responseDjangoDTO.getTable().equals("school_event")) {
                 saveChatBotContent.setData(studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
             }
 
+            // SaveChatBotContent JSON을 String으로 변환하여 저장
             return saveChat(user_chat, roomId, saveChatBotContent.toString());
+        } catch (Exception e){
+            throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
         }
     }
 
@@ -160,6 +156,8 @@ public class ChatService {
      */
     private ResponseDjangoDTO postDjango(QueryResult queryResult, String memberId){
         String intent = queryResult.getIntent().getDisplayName();
+        log.info("ChatBot Intent : {}", intent);
+
         WebClient webClient = WebClient.create(djangoUrl);
 
         switch (intent) {
@@ -171,6 +169,8 @@ public class ChatService {
                 String credit = queryResult.getParameters().getFieldsMap().get("credit").getStringValue();
                 String classMethod = queryResult.getParameters().getFieldsMap().get("classmethod").getStringValue();
                 String testType = queryResult.getParameters().getFieldsMap().get("testType").getStringValue();
+
+                log.info("classification : {}, credit : {}, classMethod, : {}, testType : {}", classification, credit, classMethod, testType);
 
                 QueryCourseRecommendDTO queryCourseRecommendDTO = new QueryCourseRecommendDTO();
                 queryCourseRecommendDTO.setMemberId(memberId);

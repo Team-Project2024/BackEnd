@@ -11,6 +11,7 @@ import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.Service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AdminLectureService {
     private final LectureRepository lectureRepository;
@@ -43,6 +45,7 @@ public class AdminLectureService {
             Member member = memberService.getMemberById(requestLectureDTO.getMemberId());
 
             // 교수만이 강의를 배정 받을 수 있기 때문에 ROLE_PROFESSOR가 아닌 member는 패스
+            log.info("Member Role : {}", member.getRole() );
             if(member.getRole().equals("ROLE_PROFESSOR")){
                 lectureList.add(requestLectureDTO.toEntity(member));
             }
