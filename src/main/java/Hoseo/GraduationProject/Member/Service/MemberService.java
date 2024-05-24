@@ -81,6 +81,8 @@ public class MemberService {
                     () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
 
             member.updatePassword(bCryptPasswordEncoder.encode(changePwDTO.getPassword()));
+        } else{
+            throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
         }
     }
 
