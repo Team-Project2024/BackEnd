@@ -28,7 +28,7 @@ public class RedisRepository {
         }
 
         valueOperations.set(code, id);
-        redisTemplate.expire(code, 6, TimeUnit.HOURS); // 3분 후에는 자동으로 삭제되도록 수정
+        redisTemplate.expire(code, 3, TimeUnit.MINUTES); // 3분 후에는 자동으로 삭제되도록 수정
         return true;
     }
 
