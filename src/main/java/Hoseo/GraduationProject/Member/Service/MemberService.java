@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,16 +74,13 @@ public class MemberService {
         redisRepository.findByCode(verificationCodeDTO);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void changePassword(ChangePwDTO changePwDTO){
         if(changePwDTO.getPassword().equals(changePwDTO.getCheckPw())){
             Member member = memberRepository.findById(changePwDTO.getId()).orElseThrow(
                     () -> new BusinessLogicException(MemberExceptionType.NONE_MEMBER));
-            try{
-                member.updatePassword(bCryptPasswordEncoder.encode(changePwDTO.getPassword()));
-                memberRepository.save(member);
-            } catch(Exception e){
-                throw new BusinessLogicException(MemberExceptionType.ERROR_CHANGE_PW);
-            }
+
+            member.updatePassword(bCryptPasswordEncoder.encode(changePwDTO.getPassword()));
         }
     }
 

@@ -1,6 +1,7 @@
 package Hoseo.GraduationProject.Member.Service;
 
 import Hoseo.GraduationProject.Member.DTO.FindUserPWDTO;
+import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.Repository.RedisRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,12 @@ public class MailSenderService {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final RedisRepository redisRepository;
+    private final MemberService memberService;
 
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void findPw(FindUserPWDTO findUserPWDTO) throws Exception {
+        Member member = memberService.getMemberById(findUserPWDTO.getId());
+        log.info("Thread: {}", Thread.currentThread().getName());
         Random random = new Random();
 
         // 0부터 999999 사이의 숫자를 생성
@@ -41,7 +45,7 @@ public class MailSenderService {
         }
 
         Context context = new Context();
-        context.setVariable("message", "인증번호는");
+        context.setVariable("name", member.getName());
         context.setVariable("data", sixDigitNumber);
 
         String message = templateEngine.process("CertifiNumber.html", context);
@@ -50,7 +54,7 @@ public class MailSenderService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mail, false, "UTF-8"); // 2번째 인자는 Multipart여부 결정
         mimeMessageHelper.setFrom("gwangjeg14@gmail.com"); //누가
         mimeMessageHelper.setTo(findUserPWDTO.getEmail()); //누구에게?
-        mimeMessageHelper.setSubject("인증번호 발송"); //제목
+        mimeMessageHelper.setSubject("LUMOS 비밀번호 변경 인증번호"); //제목
         mimeMessageHelper.setText(message, true);
 
         try {

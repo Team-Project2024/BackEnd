@@ -1,22 +1,40 @@
-<pre>
-  <code>
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
     <div>
-        <h2 th:text="${message}">메시지</h2>
-
-        <div>
-            <h2 th:text="${data}">메시지</h2>
-        </div>
+        <h2>비밀번호 재설정 링크를 보내드립니다.</h2>
     </div>
+    <p th:text="|조금 전 ${name}님의 호서대학교 LUMOS 계정 비밀번호 변경을 요청했습니다.|">메시지</p>
+    <p>회원님 본인이 요청한 경우 아래 코드를 입력하여 비밀번호를 새로 설정할 수 있습니다.</p>
+    <div>
+        <h3 th:text="${data}">메시지</h3>
+    </div>
+    <p>만약 본인이 요청한 것이 아닌 경우, 본 메일은 무시하셔도 됩니다.</p>
+</div>
 </body>
 </html>
-</code>
-</pre>
-
-<!--팀원 초대 링크를 보낼 html입니다.-->
