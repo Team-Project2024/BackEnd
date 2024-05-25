@@ -18,13 +18,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -66,7 +66,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
                         // 프론트 주소 허용
-                        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
+                        configuration.setAllowedOrigins(Arrays.asList(frontUrl, "http://192.168.164.1:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -88,10 +88,12 @@ public class SecurityConfig {
 
                 //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/student/**").hasRole("STUDENT") // STUDENT는 /api/student 패턴에만 접근 가능
-                        .requestMatchers("/api/professor/**").hasRole("PROFESSOR") // PROFESSOR는 /api/professor 패턴에만 접근 가능
-                        .requestMatchers("/api/admin/**", "/api/student/**", "/api/professor/**").hasRole("ADMIN") // ADMIN은 모든 패턴에 접근 가능
-                        .anyRequest().permitAll()) //나머지는 모두에게 권한 있음
+                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/professor/**").hasRole("PROFESSOR")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+
 
                 // 로그인 이전에 세션 생성
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)

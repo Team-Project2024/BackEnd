@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.Security.JWT;
 
+import Hoseo.GraduationProject.Security.Redis.RefreshToken;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,7 @@ public class ReissueController {
 
         //get refresh token
         String refresh = null;
+        System.out.println(request.getCookies());
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
@@ -54,7 +56,6 @@ public class ReissueController {
             //response status code
             return new ResponseEntity<>("refresh token이 만료되었습니다.", HttpStatus.BAD_REQUEST);
         }
-
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getTokenType(refresh);
 
@@ -77,6 +78,9 @@ public class ReissueController {
         String newRefresh = jwtUtil.createJwt("Refresh_Token", username, role, 21600000L); //6시간
 
         refreshTokenRepository.delete(refresh);
+        //아래 부분 오류
+        RefreshToken refreshToken = new RefreshToken(newRefresh, username);
+        refreshTokenRepository.save(refreshToken);
 
         //response 여기에서 우리는 Refresh_Token을 탈취를 방어하기 위해 Refresh Rotate를 사용 (재발급 요청마다 새로운 Refresh_Token을 전달해줌)
         response.setContentType("application/json");
@@ -104,6 +108,8 @@ public class ReissueController {
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //JavaScript로 접근 불가능하게 막음
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite","None");
         cookie.setHttpOnly(true);
 
         return cookie;

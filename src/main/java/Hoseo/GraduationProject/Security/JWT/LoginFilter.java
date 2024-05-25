@@ -1,20 +1,21 @@
 package Hoseo.GraduationProject.Security.JWT;
 
-import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Exception.ErrorResponse;
 import Hoseo.GraduationProject.Exception.ExceptionType;
 import Hoseo.GraduationProject.Member.DTO.LoginRequest;
 import Hoseo.GraduationProject.Security.ExceptionType.SecurityExceptionType;
 import Hoseo.GraduationProject.Security.Redis.RefreshToken;
 import Hoseo.GraduationProject.Security.Redis.RefreshTokenRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -32,6 +33,7 @@ import java.util.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
+@Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -114,6 +116,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        log.error(failed.getMessage());
         if(failed instanceof UsernameNotFoundException){
             setErrorResponse(response, SecurityExceptionType.NOT_FOUND, failed.getMessage());
         }else if(failed instanceof BadCredentialsException) {
@@ -136,12 +139,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(6*60*60); // 6시간
+        cookie.setMaxAge(6*60*60); // 6시간동안 쿠키에 유지
         //HTTPS 를 사용 할 경우에 true
         //cookie.setSecure(true);
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //JavaScript로 접근 불가능하게 막음
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite","None");
         cookie.setHttpOnly(true);
 
         return cookie;

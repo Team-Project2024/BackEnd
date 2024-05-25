@@ -101,6 +101,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //Refresh 토큰 Cookie 값 0
         Cookie cookie = new Cookie("Refresh_Token", null);
         cookie.setMaxAge(0);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite","None");
+        cookie.setHttpOnly(true);
         cookie.setPath("/");
 
         response.addCookie(cookie);

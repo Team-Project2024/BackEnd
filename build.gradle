@@ -17,6 +17,10 @@ configurations {
 	}
 }
 
+configurations.all {
+	exclude group: 'commons-logging', module: 'commons-logging'
+}
+
 repositories {
 	mavenCentral()
 }
@@ -31,6 +35,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' //jwt 설정
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' //jwt 설정
@@ -41,9 +46,17 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'// valid 유효성 검사
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 	implementation 'org.slf4j:slf4j-api:2.0.3' //logging
-	implementation 'ch.qos.logback:logback-classic:1.4.1' //로그관리
 	implementation 'org.springframework.boot:spring-boot-starter-mail' //구글 SMTP
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' //초대 이메일을 보내기 위함
+
+	implementation 'com.google.code.gson:gson:2.6.2'
+	implementation 'com.google.apis:google-api-services-dialogflow:v2beta1-rev15-1.23.0'
+	implementation group: 'com.google.cloud', name: 'google-cloud-dialogflow', version: '4.43.0'
+	implementation 'com.google.cloud:google-cloud-dialogflow:4.18.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' //Django API 요청
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1' // DTO -> JsonString
+
 }
 
 tasks.named('test') {
