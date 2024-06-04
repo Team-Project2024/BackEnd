@@ -4,6 +4,7 @@ import Hoseo.GraduationProject.API.Major.Service.AdminMajorService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Member.DTO.*;
 import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorDTO;
+import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorListDTO;
 import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.ExceptionType.MemberExceptionType;
 import Hoseo.GraduationProject.Member.Repository.MemberRepository;
@@ -93,8 +94,10 @@ public class MemberService {
     }
 
     // Role이 ROLE_PROFESSOR인 멤버들을 반환하는 메서드
-    public List<ResponseProfessorDTO> getProfessorList(){
+    public ResponseProfessorListDTO getProfessorList(){
+        ResponseProfessorListDTO responseProfessorListDTO = new ResponseProfessorListDTO();
         List<Member> members = memberRepository.findByRoleProfessor();
+
         List<ResponseProfessorDTO> responseProfessorDTOS = new ArrayList<>();
         for(Member member: members){
             ResponseProfessorDTO responseProfessorDTO = new ResponseProfessorDTO();
@@ -104,6 +107,8 @@ public class MemberService {
 
             responseProfessorDTOS.add(responseProfessorDTO);
         }
-        return responseProfessorDTOS;
+
+        responseProfessorListDTO.setProfessorDTOList(responseProfessorDTOS);
+        return responseProfessorListDTO;
     }
 }

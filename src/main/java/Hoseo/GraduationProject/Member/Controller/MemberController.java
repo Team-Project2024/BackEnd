@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.Member.Controller;
 
 import Hoseo.GraduationProject.Member.DTO.*;
-import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorDTO;
+import Hoseo.GraduationProject.Member.DTO.Response.ResponseProfessorListDTO;
 import Hoseo.GraduationProject.Member.Service.MailSenderService;
 import Hoseo.GraduationProject.Member.Service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,7 +61,7 @@ public class MemberController {
     }
 
     @GetMapping("/admin/member-professor")
-    public ResponseEntity<List<ResponseProfessorDTO>> getProfessorList(){
+    public ResponseEntity<ResponseProfessorListDTO> getProfessorList(){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getProfessorList());
     }
 }

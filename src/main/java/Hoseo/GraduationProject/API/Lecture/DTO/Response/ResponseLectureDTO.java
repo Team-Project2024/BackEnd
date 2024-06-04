@@ -57,6 +57,12 @@ public class ResponseLectureDTO {
     //강의평가
     private Long course_evaluation;
 
+    //강의소개
+    private String introduction;
+
+    //성적비율
+    private String gradeRatio;
+
     //교수 ID 6자리여야됨
     private String memberId;
 

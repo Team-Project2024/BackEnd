@@ -53,7 +53,7 @@ public class ChatRoomService {
             responseChatRoomDTOList.add(responseChatRoomDTO);
         }
 
-        responseListChatRoomDTO.setRepsonseChatRoomDTOList(responseChatRoomDTOList);
+        responseListChatRoomDTO.setRepsonseChatRoomDTOList(responseChatRoomDTOList);    
         return responseListChatRoomDTO;
     }
 
