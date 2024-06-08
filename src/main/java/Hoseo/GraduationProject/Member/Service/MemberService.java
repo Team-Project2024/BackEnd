@@ -96,7 +96,7 @@ public class MemberService {
     // Role이 ROLE_PROFESSOR인 멤버들을 반환하는 메서드
     public ResponseProfessorListDTO getProfessorList(){
         ResponseProfessorListDTO responseProfessorListDTO = new ResponseProfessorListDTO();
-        List<Member> members = memberRepository.findByRoleProfessor();
+        List<Member> members = memberRepository.findByRole("ROLE_PROFESSOR");
 
         List<ResponseProfessorDTO> responseProfessorDTOS = new ArrayList<>();
         for(Member member: members){

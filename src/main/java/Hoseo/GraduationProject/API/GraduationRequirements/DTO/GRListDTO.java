@@ -9,8 +9,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class RequestGRListDTO {
+public class GRListDTO {
     @NotEmpty
     @Valid
-    private List<RequestGRDTO> requestGRList;
+    private List<GRDTO> requestGRList;
 }

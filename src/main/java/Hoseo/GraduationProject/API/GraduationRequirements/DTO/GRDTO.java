@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RequestGRDTO {
+public class GRDTO {
     // 학번
     @NotBlank
     private String year;
