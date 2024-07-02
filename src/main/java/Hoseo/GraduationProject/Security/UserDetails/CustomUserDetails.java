@@ -39,6 +39,10 @@ public class CustomUserDetails implements UserDetails {
         return member.getEmail();
     }
 
+    public String getRole(){
+        return member.getRole();
+    }
+
     public String getMajor() {
         return member.getMajor().getDepartment();
     }

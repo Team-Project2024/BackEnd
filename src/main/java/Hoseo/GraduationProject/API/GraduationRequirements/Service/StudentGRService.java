@@ -19,8 +19,6 @@ public class StudentGRService {
     public GRDTO getGR(String memberId){
         Member member = memberService.getMemberById(memberId);
 
-        System.out.println(member.getMajor().getMajorId());
-
         GraduationRequirements GR =
                 grRepository.getGRByYearAndMajorId
                         (member.getId().substring(START_INDEX_OF_YEAR, END_INDEX_OF_YEAR),

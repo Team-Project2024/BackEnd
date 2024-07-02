@@ -1,11 +1,9 @@
 package Hoseo.GraduationProject.Chat.Service;
 
-import Hoseo.GraduationProject.API.Event.Service.StudentEventService;
 import Hoseo.GraduationProject.API.Lecture.Service.StudentLectureService;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
-import Hoseo.GraduationProject.Chat.DTO.Django.UnivEventDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
@@ -57,7 +55,6 @@ public class ChatService {
     private static final String GOOGLE_SCOPED_URL = "https://www.googleapis.com/auth/cloud-platform";
 
     private final StudentLectureService studentLectureService;
-    private final StudentEventService studentEventService;
 
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
@@ -139,8 +136,6 @@ public class ChatService {
             // Lecture, School_Event 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
             if (responseDjangoDTO.getTable().equals("lecture")) {
                 saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
-            } else if (responseDjangoDTO.getTable().equals("school_event")) {
-                saveChatBotContent.setData(studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
             }
 
             // SaveChatBotContent JSON을 String으로 변환하여 저장
@@ -206,22 +201,6 @@ public class ChatService {
                         .retrieve()
                         .bodyToMono(ResponseDjangoDTO.class)
                         .block();  // 졸업요건 조회
-            }
-            case "UniEvent" -> {
-                String month = queryResult.getParameters().getFieldsMap().get("month").getStringValue();
-
-                UnivEventDTO univEventDTO = new UnivEventDTO();
-                univEventDTO.setMemberId(memberId);
-                //month 데이터가 어디에 담겨서 오는지를 모르겠음
-                univEventDTO.setMonth(month);
-
-                return webClient.post()
-                        .uri("/chat/univ-event/")
-                        //여기에서는 month 랑 memberId를 같이 보내줘야됨
-                        .body(BodyInserters.fromValue(univEventDTO))
-                        .retrieve()
-                        .bodyToMono(ResponseDjangoDTO.class)
-                        .block();  // 학교 행사 조회
             }
             //default
             default -> {
