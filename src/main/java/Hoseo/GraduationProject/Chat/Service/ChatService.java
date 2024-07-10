@@ -1,8 +1,10 @@
 package Hoseo.GraduationProject.Chat.Service;
 
 import Hoseo.GraduationProject.API.Lecture.Service.StudentLectureService;
+import Hoseo.GraduationProject.API.SchoolLocation.Service.SchoolLocationService;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
+import Hoseo.GraduationProject.Chat.DTO.Django.QueryHoseoLocationDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
@@ -50,11 +52,19 @@ public class ChatService {
     @Value("${CredentialFileURL}")
     private String CredentialFileURL;
 
+    //GPT API 사용
+//    @Value("${GPTModel}")
+//    private String model;
+//    @Value("${GPT_API_URL}")
+//    private String apiUrl;
+//    private final RestTemplate restTemplate;
+
     private static final String LOCATION = "global";
     private static final String LANGUAGE_CODE = "ko";
     private static final String GOOGLE_SCOPED_URL = "https://www.googleapis.com/auth/cloud-platform";
 
     private final StudentLectureService studentLectureService;
+    private final SchoolLocationService schoolLocationService;
 
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
@@ -127,15 +137,19 @@ public class ChatService {
             // 사용할 데이터를 분리
             QueryResult queryResult = response.getQueryResult();
 
-            ResponseDjangoDTO responseDjangoDTO = postDjango(queryResult, member.getId());
+            //DialogFlow에서 전달받은 것과 사용자의 ID를 전달
+            ResponseDjangoDTO responseDjangoDTO = postDjango(queryResult, member.getId(), user_chat);
 
             SaveChatBotContent saveChatBotContent = new SaveChatBotContent();
             saveChatBotContent.setContent(responseDjangoDTO.getContent());
             saveChatBotContent.setTable(responseDjangoDTO.getTable());
 
-            // Lecture, School_Event 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
+            // Lecture, School_Location 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
             if (responseDjangoDTO.getTable().equals("lecture")) {
                 saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
+            }
+            else if(responseDjangoDTO.getTable().equals("school_location")){
+                saveChatBotContent.setData(schoolLocationService.getSchoolLocationList(responseDjangoDTO.getData()).toString());
             }
 
             // SaveChatBotContent JSON을 String으로 변환하여 저장
@@ -149,7 +163,7 @@ public class ChatService {
      * Dialog flow로부터 받은 데이터를 Django에 있는 추천시스템으로 보내여 챗봇의 답변과 데이터를 긁어온 테이블, PK값을 리스트로 전달받음
      * 만약 학사 관련 데이터가 아닐 경우에는 Django로 데이터를 보내지 않고 Dialog flow로 부터 바로 답변이 옴
      */
-    private ResponseDjangoDTO postDjango(QueryResult queryResult, String memberId){
+    private ResponseDjangoDTO postDjango(QueryResult queryResult, String memberId, String userChat){
         String intent = queryResult.getIntent().getDisplayName();
         log.info("ChatBot Intent : {}", intent);
 
@@ -202,11 +216,52 @@ public class ChatService {
                         .bodyToMono(ResponseDjangoDTO.class)
                         .block();  // 졸업요건 조회
             }
-            //default
+            //엔티티 뽑아서 같이 보내줘야됨
+            case "hoseoLocation" -> {
+                String uniInfoPlace = queryResult.getParameters().getFieldsMap().get("uniinfoplace").getStringValue();
+                String dormitory = queryResult.getParameters().getFieldsMap().get("dormitory").getStringValue();
+                String lectureRoom = queryResult.getParameters().getFieldsMap().get("lectureroom").getStringValue();
+                String facilities = queryResult.getParameters().getFieldsMap().get("facilities").getStringValue();
+                String eatPlace = queryResult.getParameters().getFieldsMap().get("eatPlace").getStringValue();
+
+                QueryHoseoLocationDTO queryHoseoLocationDTO = new QueryHoseoLocationDTO();
+                queryHoseoLocationDTO.setUniInfoPlace(uniInfoPlace);
+                queryHoseoLocationDTO.setDormitory(dormitory);
+                queryHoseoLocationDTO.setLectureRoom(lectureRoom);
+                queryHoseoLocationDTO.setFacilities(facilities);
+                queryHoseoLocationDTO.setEatPlace(eatPlace);
+
+                return webClient.post()
+                        .uri("chat/hoseo/location/")
+                        .body(BodyInserters.fromValue(queryHoseoLocationDTO))
+                        .retrieve()
+                        .bodyToMono(ResponseDjangoDTO.class)
+                        .block();  // 졸업요건 조회
+            }
+            // 기본적인 질문들은 ChatGPT로 질문을 넘길 예정임
+//            default -> {
+//                GPTRequest request = new GPTRequest(
+//                        model,userChat,1,256,1,2,2);
+//
+//                GPTResponse gptResponse = restTemplate.postForObject(
+//                        apiUrl
+//                        , request
+//                        , GPTResponse.class
+//                );
+//
+//                ResponseDjangoDTO responseDjangoDTO = new ResponseDjangoDTO();
+//                try{
+//                    responseDjangoDTO.setContent(gptResponse.getChoices().get(0).getMessage().getContent());
+//                } catch(Exception e){
+//                    responseDjangoDTO.setContent("답변을 준비하지 못했습니다.");
+//                }
+//                responseDjangoDTO.setTable("");
+//                return responseDjangoDTO;
+//            }
             default -> {
                 ResponseDjangoDTO responseDjangoDTO = new ResponseDjangoDTO();
-                responseDjangoDTO.setContent(queryResult.getFulfillmentText());
                 responseDjangoDTO.setTable("");
+                responseDjangoDTO.setContent(userChat);
                 return responseDjangoDTO;
             }
         }
