@@ -6,6 +6,8 @@ import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.QueryHoseoLocationDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
+import Hoseo.GraduationProject.Chat.DTO.GPT.GPTRequest;
+import Hoseo.GraduationProject.Chat.DTO.GPT.GPTResponse;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -53,11 +56,11 @@ public class ChatService {
     private String CredentialFileURL;
 
     //GPT API 사용
-//    @Value("${GPTModel}")
-//    private String model;
-//    @Value("${GPT_API_URL}")
-//    private String apiUrl;
-//    private final RestTemplate restTemplate;
+    @Value("${GPTModel}")
+    private String model;
+    @Value("${GPT_API_URL}")
+    private String apiUrl;
+    private final RestTemplate restTemplate;
 
     private static final String LOCATION = "global";
     private static final String LANGUAGE_CODE = "ko";
@@ -239,29 +242,23 @@ public class ChatService {
                         .block();  // 졸업요건 조회
             }
             // 기본적인 질문들은 ChatGPT로 질문을 넘길 예정임
-//            default -> {
-//                GPTRequest request = new GPTRequest(
-//                        model,userChat,1,256,1,2,2);
-//
-//                GPTResponse gptResponse = restTemplate.postForObject(
-//                        apiUrl
-//                        , request
-//                        , GPTResponse.class
-//                );
-//
-//                ResponseDjangoDTO responseDjangoDTO = new ResponseDjangoDTO();
-//                try{
-//                    responseDjangoDTO.setContent(gptResponse.getChoices().get(0).getMessage().getContent());
-//                } catch(Exception e){
-//                    responseDjangoDTO.setContent("답변을 준비하지 못했습니다.");
-//                }
-//                responseDjangoDTO.setTable("");
-//                return responseDjangoDTO;
-//            }
             default -> {
                 ResponseDjangoDTO responseDjangoDTO = new ResponseDjangoDTO();
+                try{
+                    GPTRequest request = new GPTRequest(
+                            model,userChat,1,256,1,2,2);
+                    System.out.println(request);
+                    GPTResponse gptResponse = restTemplate.postForObject(
+                            apiUrl
+                            , request
+                            , GPTResponse.class
+                    );
+                    System.out.println(gptResponse);
+                    responseDjangoDTO.setContent(gptResponse.getChoices().get(0).getMessage().getContent());
+                } catch(Exception e){
+                    responseDjangoDTO.setContent("답변을 준비하지 못했습니다.");
+                }
                 responseDjangoDTO.setTable("");
-                responseDjangoDTO.setContent(userChat);
                 return responseDjangoDTO;
             }
         }
