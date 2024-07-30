@@ -3,6 +3,7 @@ package Hoseo.GraduationProject.API.Major.Service;
 import Hoseo.GraduationProject.API.Major.DTO.Page.PageResponse;
 import Hoseo.GraduationProject.API.Major.DTO.Request.RequestMajorDTO;
 import Hoseo.GraduationProject.API.Major.DTO.Request.RequestMajorListDTO;
+import Hoseo.GraduationProject.API.Major.DTO.Response.ResponseListMajorDTO;
 import Hoseo.GraduationProject.API.Major.DTO.Response.ResponseMajorDTO;
 import Hoseo.GraduationProject.API.Major.Domain.Major;
 import Hoseo.GraduationProject.API.Major.ExceptionType.MajorExceptionType;
@@ -49,7 +50,7 @@ public class AdminMajorService {
 
     //전체 major를 반환하는 메서드 major의 id, 학과, 트랙을 반환
     @Transactional(readOnly = true)
-    public PageResponse getMajorList(int page, int size, String keyword) {
+    public PageResponse getMajorListPaging(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Major> majorPage;
 
@@ -77,5 +78,24 @@ public class AdminMajorService {
                 .totalPages(majorPage.getTotalPages())
                 .last(majorPage.isLast())
                 .build();
+    }
+
+    public ResponseListMajorDTO getMajorList(){
+        List<Major> majors = majorRepository.findAll();
+
+        ResponseListMajorDTO responseListMajorDTO = new ResponseListMajorDTO();
+        List<ResponseMajorDTO> responseMajorDTOS = new ArrayList<>();
+
+        for(Major major: majors){
+            ResponseMajorDTO responseMajorDTO = new ResponseMajorDTO();
+            responseMajorDTO.setMajorId(major.getMajorId());
+            responseMajorDTO.setDepartment(major.getDepartment());
+            responseMajorDTO.setTrack(major.getTrack());
+
+            responseMajorDTOS.add(responseMajorDTO);
+        }
+
+        responseListMajorDTO.setResponseMajorDTOList(responseMajorDTOS);
+        return responseListMajorDTO;
     }
 }
