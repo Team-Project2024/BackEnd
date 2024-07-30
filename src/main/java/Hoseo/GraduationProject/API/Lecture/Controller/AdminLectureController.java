@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.API.Lecture.Controller;
 
+import Hoseo.GraduationProject.API.Lecture.DTO.Page.PageResponse;
 import Hoseo.GraduationProject.API.Lecture.DTO.Request.RequestLectureListDTO;
-import Hoseo.GraduationProject.API.Lecture.DTO.Response.ResponseListLectureDTO;
 import Hoseo.GraduationProject.API.Lecture.ExceptionType.LectureExceptionType;
 import Hoseo.GraduationProject.API.Lecture.Service.AdminLectureService;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
@@ -20,12 +20,14 @@ public class AdminLectureController {
     private final AdminLectureService adminLectureService;
 
     @GetMapping
-    public ResponseEntity<ResponseListLectureDTO> getLectureList(){
-        ResponseListLectureDTO responseListLectureDTO = adminLectureService.getLectureList();
-        if(responseListLectureDTO.getResponseLectureDTOList().isEmpty()){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(adminLectureService.getLectureList());
+    public ResponseEntity<PageResponse> getLectureListPage(@RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                     @RequestParam(required = false) String keyword){
+        PageResponse response = adminLectureService.getLectureListPage(page, size, keyword);
+        if(response.getContent().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(adminLectureService.getLectureList());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
