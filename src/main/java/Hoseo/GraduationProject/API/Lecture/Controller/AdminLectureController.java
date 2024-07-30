@@ -18,12 +18,12 @@ import java.util.Optional;
 @RequestMapping("/admin/lecture")
 public class AdminLectureController {
     private final AdminLectureService adminLectureService;
+    private final int SIZE = 10;
 
     @GetMapping
     public ResponseEntity<PageResponse> getLectureListPage(@RequestParam(defaultValue = "0") int page,
-                                                                     @RequestParam(defaultValue = "10") int size,
                                                                      @RequestParam(required = false) String keyword){
-        PageResponse response = adminLectureService.getLectureListPage(page, size, keyword);
+        PageResponse response = adminLectureService.getLectureListPage(page, SIZE, keyword);
         if(response.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         }

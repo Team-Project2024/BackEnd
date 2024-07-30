@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/major")
 public class AdminMajorController {
     private final AdminMajorService adminMajorService;
+    private final int SIZE = 30;
 
     // 전공 추가 API
     @PostMapping
@@ -24,9 +25,8 @@ public class AdminMajorController {
 
     @GetMapping
     public ResponseEntity<PageResponse> getMajorList(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(required = false) String keyword){
-        PageResponse pageResponse = adminMajorService.getMajorList(page, size, keyword);
+        PageResponse pageResponse = adminMajorService.getMajorList(page, SIZE, keyword);
         if(pageResponse.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(pageResponse);
         }
