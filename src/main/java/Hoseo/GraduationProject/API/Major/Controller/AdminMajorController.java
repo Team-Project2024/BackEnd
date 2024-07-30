@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.API.Major.Controller;
 
+import Hoseo.GraduationProject.API.Major.DTO.Page.PageResponse;
 import Hoseo.GraduationProject.API.Major.DTO.Request.RequestMajorListDTO;
-import Hoseo.GraduationProject.API.Major.DTO.Response.ResponseListMajorDTO;
 import Hoseo.GraduationProject.API.Major.Service.AdminMajorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,13 @@ public class AdminMajorController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseListMajorDTO> getMajorList(){
-        ResponseListMajorDTO responseListMajorDTO = adminMajorService.getMajorList();
-        if(responseListMajorDTO.getResponseMajorDTOList().isEmpty()){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseListMajorDTO);
+    public ResponseEntity<PageResponse> getMajorList(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size,
+                                                     @RequestParam(required = false) String keyword){
+        PageResponse pageResponse = adminMajorService.getMajorList(page, size, keyword);
+        if(pageResponse.getContent().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(pageResponse);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(adminMajorService.getMajorList());
+        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
     }
 }
