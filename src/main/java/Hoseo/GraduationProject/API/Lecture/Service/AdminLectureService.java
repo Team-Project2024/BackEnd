@@ -12,6 +12,7 @@ import Hoseo.GraduationProject.Member.Domain.Member;
 import Hoseo.GraduationProject.Member.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,6 +76,7 @@ public class AdminLectureService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "lectureCache", allEntries = true) //LectureCache 전부 삭제
     public void deleteLecture(Long lectureId){
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(
                 () -> new BusinessLogicException(LectureExceptionType.LECTURE_NOT_FOUND));
