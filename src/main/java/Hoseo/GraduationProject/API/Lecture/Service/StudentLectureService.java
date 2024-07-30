@@ -7,6 +7,7 @@ import Hoseo.GraduationProject.API.Lecture.Repository.LectureRepository;
 import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +29,10 @@ public class StudentLectureService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseLectureDTO> getLectureListDTO(List<Long> ids){
-        List<Lecture> lectureList = lectureRepository.findAllByIds(ids);
+    @Cacheable(value = "lectureCache", key = "#lectureIds",
+            cacheManager = "cacheManager")
+    public List<ResponseLectureDTO> getLectureListDTO(List<Long> lectureIds){
+        List<Lecture> lectureList = lectureRepository.findAllByIds(lectureIds);
         List<ResponseLectureDTO> responseLectureDTOList = new ArrayList<>();
         for(Lecture lecture: lectureList){
             responseLectureDTOList.add(lecture.toDTO());
