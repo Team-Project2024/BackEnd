@@ -1,7 +1,9 @@
 package Hoseo.GraduationProject.Chat.Repository;
 
 import Hoseo.GraduationProject.Chat.Domain.ChatBot;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +19,7 @@ public interface ChatBotRepository extends JpaRepository<ChatBot, Long> {
     @Modifying
     @Query(value = "DELETE FROM chat_bot WHERE user_chat_id IN (SELECT id FROM user_chat WHERE room_id IN (SELECT id FROM chat_room WHERE member_id = :memberId))", nativeQuery = true)
     void deleteByMemberId(@Param("memberId") String memberId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    ChatBot save(ChatBot chatBot);
 }
