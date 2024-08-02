@@ -130,26 +130,6 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("비밀번호 찾기 - 실패")
-    @WithMockUser(username = "테스트_최고관리자", roles = {"SUPER"})
-    void findPw_Invalid() throws Exception {
-        FindUserPWDTO findUserPWDTO = new FindUserPWDTO();
-        findUserPWDTO.setEmail("Invalid-Email"); // 유효하지 않은 이메일
-        findUserPWDTO.setName("김광제");
-        findUserPWDTO.setId("20193176");
-
-        mvc.perform(post("/find-pw")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(findUserPWDTO))
-                        .with(csrf()))
-                .andExpect(status().isBadRequest()); // 유효성 검증 실패 시 400 Bad Request 예상
-
-        // 유효성 검증 실패로 인해 서비스 메서드가 호출되지 않아야 함
-        verify(memberService, never()).findUser(any(FindUserPWDTO.class));
-        verify(mailSenderService, never()).findPw(any(FindUserPWDTO.class));
-    }
-
-    @Test
     @DisplayName("비밀번호 찾기 - 성공")
     @WithMockUser(username = "테스트_최고관리자", roles = {"SUPER"})
     void findPw() throws Exception{
@@ -169,6 +149,26 @@ class MemberControllerTest {
 
         verify(memberService).findUser(any(FindUserPWDTO.class));
         verify(mailSenderService).findPw(any(FindUserPWDTO.class));
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 - 실패")
+    @WithMockUser(username = "테스트_최고관리자", roles = {"SUPER"})
+    void findPw_Invalid() throws Exception {
+        FindUserPWDTO findUserPWDTO = new FindUserPWDTO();
+        findUserPWDTO.setEmail("Invalid-Email"); // 유효하지 않은 이메일
+        findUserPWDTO.setName("김광제");
+        findUserPWDTO.setId("20193176");
+
+        mvc.perform(post("/find-pw")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(findUserPWDTO))
+                        .with(csrf()))
+                .andExpect(status().isBadRequest()); // 유효성 검증 실패 시 400 Bad Request 예상
+
+        // 유효성 검증 실패로 인해 서비스 메서드가 호출되지 않아야 함
+        verify(memberService, never()).findUser(any(FindUserPWDTO.class));
+        verify(mailSenderService, never()).findPw(any(FindUserPWDTO.class));
     }
 
     @Test
