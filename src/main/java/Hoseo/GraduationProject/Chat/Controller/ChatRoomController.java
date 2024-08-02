@@ -1,7 +1,9 @@
 package Hoseo.GraduationProject.Chat.Controller;
 
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseListChatRoomDTO;
+import Hoseo.GraduationProject.Chat.ExceptionType.ChatRoomExceptionType;
 import Hoseo.GraduationProject.Chat.Service.ChatRoomService;
+import Hoseo.GraduationProject.Exception.BusinessLogicException;
 import Hoseo.GraduationProject.Security.UserDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ public class ChatRoomController {
 
     @PostMapping("/chat-room")
     public ResponseEntity<Long> createChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam(required = false) String message) {
+        if(message.isEmpty()) throw new BusinessLogicException(ChatRoomExceptionType.SAVE_CHATROOM_ERROR);
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.createChatRoom(member.getMember(), message));
     }
 
@@ -31,6 +34,7 @@ public class ChatRoomController {
 
     @DeleteMapping("/chat-room")
     public ResponseEntity<Void> deleteChatRoom(@AuthenticationPrincipal CustomUserDetails member, @RequestParam(required = false) Long chatRoomId) {
+        if(chatRoomId == null) throw new BusinessLogicException(ChatRoomExceptionType.DELETE_CHATROOM_ERROR);
         chatRoomService.deleteChatRoom(member.getMember(), chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
