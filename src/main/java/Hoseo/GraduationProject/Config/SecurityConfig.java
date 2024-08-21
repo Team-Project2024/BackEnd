@@ -66,7 +66,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
                         // 프론트 주소 허용
-                        configuration.setAllowedOrigins(Arrays.asList(frontUrl, "http://192.168.164.1:3000"));
+                        configuration.setAllowedOrigins(Arrays.asList(frontUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));

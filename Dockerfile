@@ -16,6 +16,9 @@ WORKDIR /app
 
 # 빌더 이미지에서 jar 파일만 복사
 COPY --from=builder /build/build/libs/GraduationProject-0.0.1-SNAPSHOT.jar ./app.jar
+# 빌더 이미지에서 애플리케이션 빌드 후, 리소스 파일 복사
+COPY src/main/resources/credential_file.json /app/src/main/resources/
+
 
 # Install MySQL Client and Redis
 RUN apt-get update && apt-get install -y default-mysql-client redis
