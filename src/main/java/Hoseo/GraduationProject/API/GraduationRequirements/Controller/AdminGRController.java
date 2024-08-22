@@ -1,6 +1,6 @@
 package Hoseo.GraduationProject.API.GraduationRequirements.Controller;
 
-import Hoseo.GraduationProject.API.GraduationRequirements.DTO.RequestGRListDTO;
+import Hoseo.GraduationProject.API.GraduationRequirements.DTO.GRListDTO;
 import Hoseo.GraduationProject.API.GraduationRequirements.Service.AdminGRService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class AdminGRController {
     private final AdminGRService adminGrService;
 
     @PostMapping
-    public ResponseEntity<Void> createGR(@Valid @RequestBody RequestGRListDTO requestGRListDTO){
-        adminGrService.createGR(requestGRListDTO);
+    public ResponseEntity<Void> createGR(@Valid @RequestBody GRListDTO GRListDTO){
+        adminGrService.createGR(GRListDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

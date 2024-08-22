@@ -1,11 +1,9 @@
 package Hoseo.GraduationProject.Chat.Service;
 
-import Hoseo.GraduationProject.API.Event.Service.StudentEventService;
 import Hoseo.GraduationProject.API.Lecture.Service.StudentLectureService;
+import Hoseo.GraduationProject.API.SchoolLocation.Service.SchoolLocationService;
 import Hoseo.GraduationProject.Chat.DTO.ChatBotDTO;
-import Hoseo.GraduationProject.Chat.DTO.Django.QueryCourseRecommendDTO;
 import Hoseo.GraduationProject.Chat.DTO.Django.SaveChatBotContent;
-import Hoseo.GraduationProject.Chat.DTO.Django.UnivEventDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseChatDTO;
 import Hoseo.GraduationProject.Chat.DTO.Response.ResponseDjangoDTO;
 import Hoseo.GraduationProject.Chat.DTO.UserChatDTO;
@@ -28,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,9 +39,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatService {
 
-    @Value("${DjangoURL}")
-    private String djangoUrl;
-
     @Value("${ProjectId}")
     private String GoogleProjectId;
 
@@ -56,8 +49,9 @@ public class ChatService {
     private static final String LANGUAGE_CODE = "ko";
     private static final String GOOGLE_SCOPED_URL = "https://www.googleapis.com/auth/cloud-platform";
 
+    private final MakeAnswerService makeAnswerService;
     private final StudentLectureService studentLectureService;
-    private final StudentEventService studentEventService;
+    private final SchoolLocationService schoolLocationService;
 
     private final UserChatRepository userChatRepository;
     private final ChatBotRepository chatBotRepository;
@@ -130,106 +124,25 @@ public class ChatService {
             // 사용할 데이터를 분리
             QueryResult queryResult = response.getQueryResult();
 
-            ResponseDjangoDTO responseDjangoDTO = postDjango(queryResult, member.getId());
+            //DialogFlow에서 전달받은 것과 사용자의 ID를 전달
+            ResponseDjangoDTO responseDjangoDTO = makeAnswerService.postDjango(queryResult, member.getId(), user_chat);
 
             SaveChatBotContent saveChatBotContent = new SaveChatBotContent();
             saveChatBotContent.setContent(responseDjangoDTO.getContent());
             saveChatBotContent.setTable(responseDjangoDTO.getTable());
 
-            // Lecture, School_Event 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
+            // Lecture, School_Location 외에는 Data를 받아올 필요가 없음(세부 정보를 넘길 필요 X)
             if (responseDjangoDTO.getTable().equals("lecture")) {
                 saveChatBotContent.setData(studentLectureService.getLectureListDTO(responseDjangoDTO.getData()).toString());
-            } else if (responseDjangoDTO.getTable().equals("school_event")) {
-                saveChatBotContent.setData(studentEventService.getEventInfoList(responseDjangoDTO.getData()).toString());
+            }
+            else if(responseDjangoDTO.getTable().equals("school_location")){
+                saveChatBotContent.setData(schoolLocationService.getSchoolLocationList(responseDjangoDTO.getData()).toString());
             }
 
             // SaveChatBotContent JSON을 String으로 변환하여 저장
             return saveChat(user_chat, roomId, saveChatBotContent.toString());
         } catch (Exception e){
             throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
-        }
-    }
-
-    /**
-     * Dialog flow로부터 받은 데이터를 Django에 있는 추천시스템으로 보내여 챗봇의 답변과 데이터를 긁어온 테이블, PK값을 리스트로 전달받음
-     * 만약 학사 관련 데이터가 아닐 경우에는 Django로 데이터를 보내지 않고 Dialog flow로 부터 바로 답변이 옴
-     */
-    private ResponseDjangoDTO postDjango(QueryResult queryResult, String memberId){
-        String intent = queryResult.getIntent().getDisplayName();
-        log.info("ChatBot Intent : {}", intent);
-
-        WebClient webClient = WebClient.create(djangoUrl);
-
-        switch (intent) {
-            case "QueryCourseRecommend" -> {
-                String classification = "";
-                if(!queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().isEmpty()){
-                    classification = queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().get(0).getStringValue();
-                }
-                String credit = queryResult.getParameters().getFieldsMap().get("credit").getStringValue();
-                String classMethod = queryResult.getParameters().getFieldsMap().get("classmethod").getStringValue();
-                String testType = queryResult.getParameters().getFieldsMap().get("testType").getStringValue();
-
-                log.info("classification : {}, credit : {}, classMethod, : {}, testType : {}", classification, credit, classMethod, testType);
-
-                QueryCourseRecommendDTO queryCourseRecommendDTO = new QueryCourseRecommendDTO();
-                queryCourseRecommendDTO.setMemberId(memberId);
-                queryCourseRecommendDTO.setClassification(classification);
-                queryCourseRecommendDTO.setCredit(credit);
-                queryCourseRecommendDTO.setClassMethod(classMethod);
-                queryCourseRecommendDTO.setTestType(testType);
-
-                // "0" or "1" 로 오는 String을 "1"과 같다면 true를 아니라면 false로 초기화
-                queryCourseRecommendDTO.setTeamPlay("1".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
-                queryCourseRecommendDTO.setAiSw("1".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
-
-                return webClient.post()
-                        .uri("/chat/course/query-recommend/")
-                        .body(BodyInserters.fromValue(queryCourseRecommendDTO))
-                        .retrieve()
-                        // 이부분 String을 DTO로 변경 필요함
-                        .bodyToMono(ResponseDjangoDTO.class)
-                        .block();  // 질문 기반 과목 추천
-            }
-            case "HistoryCourseRecommend" -> {
-                return webClient.post()
-                        .uri("/chat/course/history-recommend/")
-                        .body(BodyInserters.fromValue(memberId))
-                        .retrieve()
-                        .bodyToMono(ResponseDjangoDTO.class)
-                        .block();  // 수강 기록 기반 과목 추천
-            }
-            case "graduationCheck" -> {
-                return webClient.post()
-                        .uri("/chat/course/graduation-check/")
-                        .body(BodyInserters.fromValue(memberId))
-                        .retrieve()
-                        .bodyToMono(ResponseDjangoDTO.class)
-                        .block();  // 졸업요건 조회
-            }
-            case "UniEvent" -> {
-                String month = queryResult.getParameters().getFieldsMap().get("month").getStringValue();
-
-                UnivEventDTO univEventDTO = new UnivEventDTO();
-                univEventDTO.setMemberId(memberId);
-                //month 데이터가 어디에 담겨서 오는지를 모르겠음
-                univEventDTO.setMonth(month);
-
-                return webClient.post()
-                        .uri("/chat/univ-event/")
-                        //여기에서는 month 랑 memberId를 같이 보내줘야됨
-                        .body(BodyInserters.fromValue(univEventDTO))
-                        .retrieve()
-                        .bodyToMono(ResponseDjangoDTO.class)
-                        .block();  // 학교 행사 조회
-            }
-            //default
-            default -> {
-                ResponseDjangoDTO responseDjangoDTO = new ResponseDjangoDTO();
-                responseDjangoDTO.setContent(queryResult.getFulfillmentText());
-                responseDjangoDTO.setTable("");
-                return responseDjangoDTO;
-            }
         }
     }
 

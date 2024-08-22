@@ -73,6 +73,11 @@ public class RequestLectureDTO {
     @NotNull
     private Long course_evaluation;
 
+    @Nullable
+    private String introduction;
+
+    @NotBlank String gradeRatio;
+
     //교수 ID 6자리여야됨
     @NotBlank
     private String memberId;
@@ -96,6 +101,8 @@ public class RequestLectureDTO {
                 .gradeMethod(this.getGradeMethod())
                 .aiSw(this.isAiSw())
                 .course_evaluation(this.getCourse_evaluation())
+                .introduction(this.getIntroduction())
+                .gradeRatio(this.getGradeRatio())
                 .member(member)
                 .build();
     }

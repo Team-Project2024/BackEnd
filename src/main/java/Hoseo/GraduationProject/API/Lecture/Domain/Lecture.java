@@ -74,6 +74,12 @@ public class Lecture {
     @Column(name = "course_evaluation")
     private Long course_evaluation;
 
+    @Column(name = "introduction")
+    private String introduction;
+
+    @Column(name = "grade_ratio")
+    private String gradeRatio;
+
     //교수 정보
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -83,6 +89,10 @@ public class Lecture {
     @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
     private List<CourseDetails> courseDetails = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY)
+    private List<LectureDetail> lectureDetails = new ArrayList<>();
+
     public void deleteLecture(){
         this.room = null;
     }
@@ -91,7 +101,9 @@ public class Lecture {
     Lecture(Long id, String lectureName, String classification, String room,
             Long credit, Long division, Long grade, String lectureTime, String classMethod,
             String testType, Long teamwork, Long entrepreneurship, Long creativeThinking, Long harnessingResource,
-            boolean teamPlay, String gradeMethod, boolean aiSw, Long course_evaluation, Member member) {
+            boolean teamPlay, String gradeMethod, boolean aiSw, Long course_evaluation, Member member,
+            String introduction, String gradeRatio
+    ) {
         this.id = id;
         this.lectureName = lectureName;
         this.classification = classification;
@@ -111,6 +123,8 @@ public class Lecture {
         this.aiSw = aiSw;
         this.course_evaluation = course_evaluation;
         this.member = member;
+        this.introduction = introduction;
+        this.gradeRatio = gradeRatio;
     }
 
     public ResponseLectureDTO toDTO(){
@@ -133,6 +147,8 @@ public class Lecture {
         responseLectureDTO.setGradeMethod(this.getGradeMethod());
         responseLectureDTO.setAiSw(this.isAiSw());
         responseLectureDTO.setCourse_evaluation(this.getCourse_evaluation());
+        responseLectureDTO.setIntroduction(this.getIntroduction());
+        responseLectureDTO.setGradeRatio(this.getGradeRatio());
         responseLectureDTO.setMemberId(this.getMember().getId());
         responseLectureDTO.setMemberName(this.getMember().getName());
         responseLectureDTO.setDepartment(this.getMember().getMajor().getDepartment());

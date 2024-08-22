@@ -1,7 +1,7 @@
 package Hoseo.GraduationProject.API.GraduationRequirements.Service;
 
-import Hoseo.GraduationProject.API.GraduationRequirements.DTO.RequestGRDTO;
-import Hoseo.GraduationProject.API.GraduationRequirements.DTO.RequestGRListDTO;
+import Hoseo.GraduationProject.API.GraduationRequirements.DTO.GRDTO;
+import Hoseo.GraduationProject.API.GraduationRequirements.DTO.GRListDTO;
 import Hoseo.GraduationProject.API.GraduationRequirements.Domain.GraduationRequirements;
 import Hoseo.GraduationProject.API.GraduationRequirements.ExceptionType.GRExceptionType;
 import Hoseo.GraduationProject.API.GraduationRequirements.Repository.GRRepository;
@@ -24,9 +24,9 @@ public class AdminGRService {
     private static final Long CHAPEL = 4L;
 
     @Transactional(rollbackFor = Exception.class)
-    public void createGR(RequestGRListDTO requestGRListDTO){
+    public void createGR(GRListDTO GRListDTO){
         List<GraduationRequirements> graduationRequirementsList = new ArrayList<>();
-        for(RequestGRDTO requestGRDTO: requestGRListDTO.getRequestGRList()){
+        for(GRDTO requestGRDTO: GRListDTO.getRequestGRList()){
             GraduationRequirements graduationRequirements = GraduationRequirements.builder()
                     .year(requestGRDTO.getYear())
                     .characterCulture(requestGRDTO.getCharacterCulture())

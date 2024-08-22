@@ -1,5 +1,6 @@
 package Hoseo.GraduationProject.API.Major.Controller;
 
+import Hoseo.GraduationProject.API.Major.DTO.Page.PageResponse;
 import Hoseo.GraduationProject.API.Major.DTO.Request.RequestMajorListDTO;
 import Hoseo.GraduationProject.API.Major.DTO.Response.ResponseListMajorDTO;
 import Hoseo.GraduationProject.API.Major.Service.AdminMajorService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/major")
 public class AdminMajorController {
     private final AdminMajorService adminMajorService;
+    private final int SIZE = 30;
 
     // 전공 추가 API
     @PostMapping
@@ -22,12 +24,22 @@ public class AdminMajorController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<ResponseListMajorDTO> getMajorList(){
         ResponseListMajorDTO responseListMajorDTO = adminMajorService.getMajorList();
         if(responseListMajorDTO.getResponseMajorDTOList().isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseListMajorDTO);
         }
         return ResponseEntity.status(HttpStatus.OK).body(adminMajorService.getMajorList());
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse> getMajorList(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(required = false) String keyword){
+        PageResponse pageResponse = adminMajorService.getMajorListPaging(page, SIZE, keyword);
+        if(pageResponse.getContent().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(pageResponse);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
     }
 }
