@@ -43,11 +43,13 @@ public class MakeAnswerService {
                 if(!queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().isEmpty()){
                     classification = queryResult.getParameters().getFieldsMap().get("classification").getListValue().getValuesList().get(0).getStringValue();
                 }
+
                 String credit = queryResult.getParameters().getFieldsMap().get("credit").getStringValue();
                 String classMethod = queryResult.getParameters().getFieldsMap().get("classmethod").getStringValue();
                 String testType = queryResult.getParameters().getFieldsMap().get("testType").getStringValue();
+                String gradeMethod = queryResult.getParameters().getFieldsMap().get("gradeMethod").getStringValue();
 
-                log.info("classification : {}, credit : {}, classMethod, : {}, testType : {}", classification, credit, classMethod, testType);
+                log.info("classification : {}, credit : {}, classMethod, : {}, testType : {}, gradeMethod : {}", classification, credit, classMethod, testType,gradeMethod);
 
                 QueryCourseRecommendDTO queryCourseRecommendDTO = new QueryCourseRecommendDTO();
                 queryCourseRecommendDTO.setMemberId(memberId);
@@ -55,10 +57,14 @@ public class MakeAnswerService {
                 queryCourseRecommendDTO.setCredit(credit);
                 queryCourseRecommendDTO.setClassMethod(classMethod);
                 queryCourseRecommendDTO.setTestType(testType);
+                queryCourseRecommendDTO.setGradeMethod(gradeMethod);
 
-                // "0" or "1" 로 오는 String을 "1"과 같다면 true를 아니라면 false로 초기화
-                queryCourseRecommendDTO.setTeamPlay("1".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
-                queryCourseRecommendDTO.setAiSw("1".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
+
+
+                // dialogFlow에서  0,1이 int형으로 와서 성윤이가 1대신 대문자O가 오게 해놨음
+                // 그래서 대문자O가 오면 True, 아니면 False로 초기화
+                queryCourseRecommendDTO.setTeamPlay("O".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
+                queryCourseRecommendDTO.setAiSw("O".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
 
                 return webClient.post()
                         .uri("/chat/course/query-recommend/")

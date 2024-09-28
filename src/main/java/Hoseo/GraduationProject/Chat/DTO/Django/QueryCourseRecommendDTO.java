@@ -12,5 +12,6 @@ public class QueryCourseRecommendDTO {
     private String credit;
     private String classification;
     private String testType;
+    private String gradeMethod;
     private boolean aiSw;
 }
