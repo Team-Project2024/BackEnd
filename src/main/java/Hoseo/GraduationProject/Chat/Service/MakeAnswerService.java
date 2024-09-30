@@ -66,6 +66,8 @@ public class MakeAnswerService {
                 queryCourseRecommendDTO.setTeamPlay("O".equals(queryResult.getParameters().getFieldsMap().get("teamplay").getStringValue()));
                 queryCourseRecommendDTO.setAiSw("O".equals(queryResult.getParameters().getFieldsMap().get("aiSw").getStringValue()));
 
+                log.info("teamPlay : {}, aiSw : {}", queryCourseRecommendDTO.isTeamPlay(), queryCourseRecommendDTO.isAiSw());
+
                 return webClient.post()
                         .uri("/chat/course/query-recommend/")
                         .body(BodyInserters.fromValue(queryCourseRecommendDTO))

@@ -140,6 +140,7 @@ public class ChatService {
             }
 
             // SaveChatBotContent JSON을 String으로 변환하여 저장
+            // 프론트에서 파싱하여 사용함
             return saveChat(user_chat, roomId, saveChatBotContent.toString());
         } catch (Exception e){
             throw new BusinessLogicException(ChatExceptionType.CHAT_ERROR);
@@ -150,6 +151,8 @@ public class ChatService {
     public ChatBotDTO saveChat(String user_chat, Long chatRoomId, String chatbot_chat) {
         ChatRoom chatroom = chatRoomRepository.findById(chatRoomId).orElseThrow(
                 () -> new BusinessLogicException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
+
+        // 채팅방의 마지막 채팅 날짜를 현재 시간으로 수정함
         chatroom.updateLastChatDate(new Timestamp(System.currentTimeMillis()));
 
         UserChat userChat = UserChat.builder()
